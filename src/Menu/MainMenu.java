@@ -1,3 +1,5 @@
+package Menu;
+
 import javax.swing.*;
 
 public class MainMenu extends JFrame
@@ -14,11 +16,5 @@ public class MainMenu extends JFrame
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setContentPane(panel1);
         this.pack();
-    }
-
-    public static void main(String[] args)
-    {
-        JFrame frame = new MainMenu("Anan");
-        frame.setVisible(true);
     }
 }
