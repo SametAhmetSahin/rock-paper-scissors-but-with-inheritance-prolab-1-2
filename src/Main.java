@@ -1,5 +1,5 @@
-import Menu.MainMenu;
-import Objects.*;
+import Menu.*;
+import GameObjects.*;
 import javax.swing.*;
 
 public class Main
