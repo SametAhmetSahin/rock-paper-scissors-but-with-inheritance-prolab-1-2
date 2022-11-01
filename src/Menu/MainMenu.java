@@ -19,13 +19,10 @@ public class MainMenu extends JFrame
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setContentPane(panel1);
         this.pack();
-        dertButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dertText.setText("DERDİNİ SİKEYİM!!!");
+        dertButton.addActionListener(e -> {
+            dertText.setText("DERDİNİ SİKEYİM!!!");
 
-                JOptionPane.showMessageDialog(null, "Derdiniz sikilmiştir. Bilginize.", "Bilgilendirme Mesajı", JOptionPane.INFORMATION_MESSAGE);
-            }
+            JOptionPane.showMessageDialog(null, "Derdiniz sikilmiştir. Bilginize.", "Bilgilendirme Mesajı", JOptionPane.INFORMATION_MESSAGE);
         });
     }
 }
