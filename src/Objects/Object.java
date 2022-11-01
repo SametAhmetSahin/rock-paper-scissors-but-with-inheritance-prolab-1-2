@@ -37,4 +37,20 @@ public abstract class Object
     {
         return this.levelPoint;
     }
+
+    public void ShowObjectStats()
+    {
+        System.out.println("This object's durability = " + durability);
+        System.out.println("This object's level point = " + levelPoint);
+    }
+
+    public int CalculateAttackValue()
+    {
+        return 2 + 2;
+    }
+
+    public void UpdateStats()
+    {
+        System.out.println("Something happened.");
+    }
 }
