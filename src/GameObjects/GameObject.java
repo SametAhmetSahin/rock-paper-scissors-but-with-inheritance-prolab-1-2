@@ -9,12 +9,13 @@ public abstract class GameObject
         Scissor,
         HeavyRock,
         SpecialPaper,
-        ProfessionalScissor
+        MasterScissor
     }
 
     protected GameObjectType type;
     protected double durability;
     protected double levelPoint;
+    protected double a = 0.2;
 
     public GameObject()
     {
@@ -65,7 +66,32 @@ public abstract class GameObject
         System.out.println("This object's level point = " + levelPoint);
     }
 
-    public double CalculateAttackValue()
+    public double CalculateAttackValue(Rock enemyRock)
+    {
+        return 2.0 + 2.0;
+    }
+
+    public double CalculateAttackValue(Paper enemyPaper)
+    {
+        return 2.0 + 2.0;
+    }
+
+    public double CalculateAttackValue(Scissor enemyScissor)
+    {
+        return 2.0 + 2.0;
+    }
+
+    public double CalculateAttackValue(HeavyRock enemyHeavyRock)
+    {
+        return 2.0 + 2.0;
+    }
+
+    public double CalculateAttackValue(SpecialPaper enemySpecialPaper)
+    {
+        return 2.0 + 2.0;
+    }
+
+    public double CalculateAttackValue(MasterScissor enemyMasterScissor)
     {
         return 2.0 + 2.0;
     }

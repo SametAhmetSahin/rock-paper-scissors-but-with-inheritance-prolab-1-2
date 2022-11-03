@@ -38,6 +38,7 @@ public class Rock extends GameObject
         return this.hardness;
     }
 
+    @Override
     public void ShowObjectStats()
     {
         System.out.println("Rock");
@@ -46,13 +47,43 @@ public class Rock extends GameObject
         System.out.println("Hardness = " + this.hardness);
     }
 
-    public double CalculateAttackValue()
+    @Override
+    public double CalculateAttackValue(Rock enemyRock)
     {
-        double finalAttackValue = 0.0;
-
-        return finalAttackValue;
+        return 2.0 + 2.0;
     }
 
+    @Override
+    public double CalculateAttackValue(Paper enemyPaper)
+    {
+        return 2.0 + 2.0;
+    }
+
+    @Override
+    public double CalculateAttackValue(Scissor enemyScissor)
+    {
+        return 2.0 + 2.0;
+    }
+
+    @Override
+    public double CalculateAttackValue(HeavyRock enemyHeavyRock)
+    {
+        return 2.0 + 2.0;
+    }
+
+    @Override
+    public double CalculateAttackValue(SpecialPaper enemySpecialPaper)
+    {
+        return 2.0 + 2.0;
+    }
+
+    @Override
+    public double CalculateAttackValue(MasterScissor enemyMasterScissor)
+    {
+        return 2.0 + 2.0;
+    }
+
+    @Override
     public void UpdateStats()
     {
 

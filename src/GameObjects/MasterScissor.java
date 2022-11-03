@@ -9,7 +9,7 @@ public class MasterScissor extends Scissor
         super.SetDurability(20.0);
         super.SetLevelPoint(0.0);
         super.SetSharpness(2.0);
-        super.SetType(GameObjectType.ProfessionalScissor);
+        super.SetType(GameObjectType.MasterScissor);
         this.speed = 2.0;
     }
 
@@ -18,7 +18,7 @@ public class MasterScissor extends Scissor
         super.SetDurability(startDurability);
         super.SetLevelPoint(startLevelPoint);
         super.SetSharpness(2.0);
-        super.SetType(GameObjectType.ProfessionalScissor);
+        super.SetType(GameObjectType.MasterScissor);
         this.speed = 2.0;
     }
 
@@ -27,7 +27,7 @@ public class MasterScissor extends Scissor
         super.SetDurability(startDurability);
         super.SetLevelPoint(startLevelPoint);
         super.SetSharpness(startSharpness);
-        super.SetType(GameObjectType.ProfessionalScissor);
+        super.SetType(GameObjectType.MasterScissor);
         this.speed = startSpeed;
     }
 
@@ -41,6 +41,7 @@ public class MasterScissor extends Scissor
         return this.speed;
     }
 
+    @Override
     public void ShowObjectStats()
     {
         System.out.println("Professional Scissor");
@@ -50,13 +51,43 @@ public class MasterScissor extends Scissor
         System.out.println("Speed = " + this.speed);
     }
 
-    public double CalculateAttackValue()
+    @Override
+    public double CalculateAttackValue(Rock enemyRock)
     {
-        double finalAttackValue = 0.0;
-
-        return finalAttackValue;
+        return 2.0 + 2.0;
     }
 
+    @Override
+    public double CalculateAttackValue(Paper enemyPaper)
+    {
+        return 2.0 + 2.0;
+    }
+
+    @Override
+    public double CalculateAttackValue(Scissor enemyScissor)
+    {
+        return 2.0 + 2.0;
+    }
+
+    @Override
+    public double CalculateAttackValue(HeavyRock enemyHeavyRock)
+    {
+        return 2.0 + 2.0;
+    }
+
+    @Override
+    public double CalculateAttackValue(SpecialPaper enemySpecialPaper)
+    {
+        return 2.0 + 2.0;
+    }
+
+    @Override
+    public double CalculateAttackValue(MasterScissor enemyMasterScissor)
+    {
+        return 2.0 + 2.0;
+    }
+
+    @Override
     public void UpdateStats()
     {
 

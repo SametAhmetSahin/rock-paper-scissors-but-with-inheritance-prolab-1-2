@@ -41,6 +41,7 @@ public class SpecialPaper extends Paper
         return this.thickness;
     }
 
+    @Override
     public void ShowObjectStats()
     {
         System.out.println("Special Paper");
@@ -50,13 +51,43 @@ public class SpecialPaper extends Paper
         System.out.println("Thickness = " + this.thickness);
     }
 
-    public double CalculateAttackValue()
+    @Override
+    public double CalculateAttackValue(Rock enemyRock)
     {
-        double finalAttackValue = 0.0;
-
-        return finalAttackValue;
+        return 2.0 + 2.0;
     }
 
+    @Override
+    public double CalculateAttackValue(Paper enemyPaper)
+    {
+        return 2.0 + 2.0;
+    }
+
+    @Override
+    public double CalculateAttackValue(Scissor enemyScissor)
+    {
+        return 2.0 + 2.0;
+    }
+
+    @Override
+    public double CalculateAttackValue(HeavyRock enemyHeavyRock)
+    {
+        return 2.0 + 2.0;
+    }
+
+    @Override
+    public double CalculateAttackValue(SpecialPaper enemySpecialPaper)
+    {
+        return 2.0 + 2.0;
+    }
+
+    @Override
+    public double CalculateAttackValue(MasterScissor enemyMasterScissor)
+    {
+        return 2.0 + 2.0;
+    }
+
+    @Override
     public void UpdateStats()
     {
 

@@ -38,6 +38,7 @@ public class Paper extends GameObject
         return this.influence;
     }
 
+    @Override
     public void ShowObjectStats()
     {
         System.out.println("Paper");
@@ -46,13 +47,43 @@ public class Paper extends GameObject
         System.out.println("Influence = " + this.influence);
     }
 
-    public double CalculateAttackValue()
+    @Override
+    public double CalculateAttackValue(Rock enemyRock)
     {
-        double finalAttackValue = 0.0;
-
-        return finalAttackValue;
+        return 2.0 + 2.0;
     }
 
+    @Override
+    public double CalculateAttackValue(Paper enemyPaper)
+    {
+        return 2.0 + 2.0;
+    }
+
+    @Override
+    public double CalculateAttackValue(Scissor enemyScissor)
+    {
+        return 2.0 + 2.0;
+    }
+
+    @Override
+    public double CalculateAttackValue(HeavyRock enemyHeavyRock)
+    {
+        return 2.0 + 2.0;
+    }
+
+    @Override
+    public double CalculateAttackValue(SpecialPaper enemySpecialPaper)
+    {
+        return 2.0 + 2.0;
+    }
+
+    @Override
+    public double CalculateAttackValue(MasterScissor enemyMasterScissor)
+    {
+        return 2.0 + 2.0;
+    }
+
+    @Override
     public void UpdateStats()
     {
 
