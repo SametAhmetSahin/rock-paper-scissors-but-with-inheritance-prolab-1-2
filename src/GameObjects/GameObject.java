@@ -2,7 +2,7 @@ package GameObjects;
 
 public abstract class GameObject
 {
-    public enum GameObjectType
+    protected enum GameObjectType
     {
         Rock,
         Paper,
@@ -12,9 +12,9 @@ public abstract class GameObject
         ProfessionalScissor
     }
 
-    private GameObjectType type;
-    private double durability;
-    private double levelPoint;
+    protected GameObjectType type;
+    protected double durability;
+    protected double levelPoint;
 
     public GameObject()
     {

@@ -2,7 +2,7 @@ package GameObjects;
 
 public class SpecialPaper extends Paper
 {
-    private double thickness;
+    protected double thickness;
 
     public SpecialPaper()
     {

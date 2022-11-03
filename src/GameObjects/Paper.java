@@ -2,7 +2,7 @@ package GameObjects;
 
 public class Paper extends GameObject
 {
-    private double influence;
+    protected double influence;
 
     public Paper()
     {

@@ -1,10 +1,10 @@
 package GameObjects;
 
-public class ProfessionalScissor extends Scissor
+public class MasterScissor extends Scissor
 {
-    private double speed;
+    protected double speed;
 
-    public ProfessionalScissor()
+    public MasterScissor()
     {
         super.SetDurability(20.0);
         super.SetLevelPoint(0.0);
@@ -13,7 +13,7 @@ public class ProfessionalScissor extends Scissor
         this.speed = 2.0;
     }
 
-    public ProfessionalScissor(double startDurability, double startLevelPoint)
+    public MasterScissor(double startDurability, double startLevelPoint)
     {
         super.SetDurability(startDurability);
         super.SetLevelPoint(startLevelPoint);
@@ -22,7 +22,7 @@ public class ProfessionalScissor extends Scissor
         this.speed = 2.0;
     }
 
-    public ProfessionalScissor(double startDurability, double startLevelPoint, double startSharpness, double startSpeed)
+    public MasterScissor(double startDurability, double startLevelPoint, double startSharpness, double startSpeed)
     {
         super.SetDurability(startDurability);
         super.SetLevelPoint(startLevelPoint);

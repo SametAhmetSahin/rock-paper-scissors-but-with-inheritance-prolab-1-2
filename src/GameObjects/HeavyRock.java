@@ -2,7 +2,7 @@ package GameObjects;
 
 public class HeavyRock extends Rock
 {
-    private double heat;
+    protected double heat;
 
     public HeavyRock()
     {

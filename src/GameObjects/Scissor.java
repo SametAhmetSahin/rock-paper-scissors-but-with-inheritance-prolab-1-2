@@ -2,7 +2,7 @@ package GameObjects;
 
 public class Scissor extends GameObject
 {
-    private double sharpness;
+    protected double sharpness;
 
     public Scissor()
     {

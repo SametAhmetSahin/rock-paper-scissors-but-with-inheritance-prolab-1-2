@@ -2,7 +2,7 @@ package GameObjects;
 
 public class Rock extends GameObject
 {
-    private double hardness;
+    protected double hardness;
 
     public Rock()
     {
