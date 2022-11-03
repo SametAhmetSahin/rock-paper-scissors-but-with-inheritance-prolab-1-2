@@ -54,37 +54,37 @@ public class SpecialPaper extends Paper
     @Override
     public double CalculateAttackValue(Rock enemyRock)
     {
-        return 2.0 + 2.0;
+        return (this.influence * this.thickness) / (a * enemyRock.hardness);
     }
 
     @Override
     public double CalculateAttackValue(Paper enemyPaper)
     {
-        return 2.0 + 2.0;
+        return 0;   // Çünkü özel kağıdın kağıda karşı bir etkisi olamaz.
     }
 
     @Override
     public double CalculateAttackValue(Scissor enemyScissor)
     {
-        return 2.0 + 2.0;
+        return (this.influence * this.thickness) / ((1.0 - a) * enemyScissor.sharpness);
     }
 
     @Override
     public double CalculateAttackValue(HeavyRock enemyHeavyRock)
     {
-        return 2.0 + 2.0;
+        return (this.influence * this.thickness) / (a * enemyHeavyRock.hardness * enemyHeavyRock.heat);
     }
 
     @Override
     public double CalculateAttackValue(SpecialPaper enemySpecialPaper)
     {
-        return 2.0 + 2.0;
+        return 0;   // Çünkü özel kağıdın özel kağıda karşı bir etkisi olamaz.
     }
 
     @Override
     public double CalculateAttackValue(MasterScissor enemyMasterScissor)
     {
-        return 2.0 + 2.0;
+        return (this.influence * this.thickness) / ((1.0 - a) * enemyMasterScissor.sharpness * enemyMasterScissor.speed);
     }
 
     @Override

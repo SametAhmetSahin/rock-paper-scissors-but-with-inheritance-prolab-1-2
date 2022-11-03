@@ -54,37 +54,37 @@ public class HeavyRock extends Rock
     @Override
     public double CalculateAttackValue(Rock enemyRock)
     {
-        return 2.0 + 2.0;
+        return 0;   // Çünkü ağır taşın taşa karşı bir etkisi olamaz.
     }
 
     @Override
     public double CalculateAttackValue(Paper enemyPaper)
     {
-        return 2.0 + 2.0;
+        return (this.hardness * this.heat) / ((1.0 - a) * enemyPaper.influence);
     }
 
     @Override
     public double CalculateAttackValue(Scissor enemyScissor)
     {
-        return 2.0 + 2.0;
+        return (this.hardness * this.heat) / (a * enemyScissor.sharpness);
     }
 
     @Override
     public double CalculateAttackValue(HeavyRock enemyHeavyRock)
     {
-        return 2.0 + 2.0;
+        return 0;   // Çünkü ağır taşın ağır taşa karşı bir etkisi olamaz.
     }
 
     @Override
     public double CalculateAttackValue(SpecialPaper enemySpecialPaper)
     {
-        return 2.0 + 2.0;
+        return (this.hardness * this.heat) / ((1.0 - a) * enemySpecialPaper.influence * enemySpecialPaper.thickness);
     }
 
     @Override
     public double CalculateAttackValue(MasterScissor enemyMasterScissor)
     {
-        return 2.0 + 2.0;
+        return (this.hardness * this.heat) / (a * enemyMasterScissor.sharpness * enemyMasterScissor.speed);
     }
 
     @Override
