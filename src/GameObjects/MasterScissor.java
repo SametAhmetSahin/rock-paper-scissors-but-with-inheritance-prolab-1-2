@@ -44,6 +44,7 @@ public class MasterScissor extends Scissor
     @Override
     public void ShowObjectStats()
     {
+        System.out.println();
         System.out.println("=================================================================");
         System.out.println("Master Scissor");
         System.out.println("Durability = " + super.GetDurability());

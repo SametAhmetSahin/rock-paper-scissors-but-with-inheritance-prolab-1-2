@@ -41,6 +41,7 @@ public class Scissor extends GameObject
     @Override
     public void ShowObjectStats()
     {
+        System.out.println();
         System.out.println("=================================================================");
         System.out.println("Scissor");
         System.out.println("Durability = " + super.GetDurability());

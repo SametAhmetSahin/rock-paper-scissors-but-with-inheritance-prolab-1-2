@@ -41,6 +41,7 @@ public class Rock extends GameObject
     @Override
     public void ShowObjectStats()
     {
+        System.out.println();
         System.out.println("=================================================================");
         System.out.println("Rock");
         System.out.println("Durability = " + super.GetDurability());

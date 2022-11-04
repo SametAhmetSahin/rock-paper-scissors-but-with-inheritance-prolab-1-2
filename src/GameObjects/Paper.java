@@ -41,6 +41,7 @@ public class Paper extends GameObject
     @Override
     public void ShowObjectStats()
     {
+        System.out.println();
         System.out.println("=================================================================");
         System.out.println("Paper");
         System.out.println("Durability = " + super.GetDurability());

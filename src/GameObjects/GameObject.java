@@ -62,8 +62,11 @@ public abstract class GameObject
 
     public void ShowObjectStats()
     {
+        System.out.println();
+        System.out.println("=================================================================");
         System.out.println("This object's durability = " + durability);
         System.out.println("This object's level point = " + levelPoint);
+        System.out.println("=================================================================");
     }
 
     public double CalculateAttackValue(Rock enemyRock)

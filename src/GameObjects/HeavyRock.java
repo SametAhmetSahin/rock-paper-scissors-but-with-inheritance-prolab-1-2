@@ -44,6 +44,7 @@ public class HeavyRock extends Rock
     @Override
     public void ShowObjectStats()
     {
+        System.out.println();
         System.out.println("=================================================================");
         System.out.println("Heavy Rock");
         System.out.println("Durability = " + super.GetDurability());

@@ -44,6 +44,7 @@ public class SpecialPaper extends Paper
     @Override
     public void ShowObjectStats()
     {
+        System.out.println();
         System.out.println("=================================================================");
         System.out.println("Special Paper");
         System.out.println("Durability = " + super.GetDurability());
