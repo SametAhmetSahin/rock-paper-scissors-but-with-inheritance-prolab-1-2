@@ -41,10 +41,12 @@ public class Paper extends GameObject
     @Override
     public void ShowObjectStats()
     {
+        System.out.println("=================================================================");
         System.out.println("Paper");
         System.out.println("Durability = " + super.GetDurability());
         System.out.println("Level point = " + super.GetLevelPoint());
         System.out.println("Influence = " + this.influence);
+        System.out.println("=================================================================");
     }
 
     @Override
@@ -84,8 +86,17 @@ public class Paper extends GameObject
     }
 
     @Override
-    public void UpdateStats()
+    public int UpdateStats(long addToDurability, long addToLevelPoint)
     {
+        this.SetDurability(this.GetDurability() + addToDurability);
+        this.SetLevelPoint(this.GetLevelPoint() + addToLevelPoint);
 
+        if(this.GetDurability() <= 0)
+            return -1;
+
+        if(this.GetLevelPoint() > 30)
+            return 1;
+
+        return 0;
     }
 }

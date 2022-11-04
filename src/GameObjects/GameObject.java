@@ -96,8 +96,9 @@ public abstract class GameObject
         return 2.0 + 2.0;
     }
 
-    public void UpdateStats()
+    public int UpdateStats(long addToDurability, long addToLevelPoint)
     {
         System.out.println("Something happened.");
+        return 0;
     }
 }
