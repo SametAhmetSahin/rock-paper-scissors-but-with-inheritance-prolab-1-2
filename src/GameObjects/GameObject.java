@@ -12,9 +12,9 @@ public abstract class GameObject
         MasterScissor
     }
 
-    protected GameObjectType type;
-    protected double durability;
-    protected double levelPoint;
+    private GameObjectType type;
+    private double durability;
+    private double levelPoint;
     protected double a = 0.2;
 
     public GameObject()

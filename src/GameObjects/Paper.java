@@ -2,7 +2,7 @@ package GameObjects;
 
 public class Paper extends GameObject
 {
-    protected double influence;
+    private double influence;
 
     public Paper()
     {
@@ -50,7 +50,7 @@ public class Paper extends GameObject
     @Override
     public double CalculateAttackValue(Rock enemyRock)
     {
-        return this.influence / (a * enemyRock.hardness);
+        return this.influence / (a * enemyRock.GetHardness());
     }
 
     @Override
@@ -62,13 +62,13 @@ public class Paper extends GameObject
     @Override
     public double CalculateAttackValue(Scissor enemyScissor)
     {
-        return this.influence / ((1.0 - a) * enemyScissor.sharpness);
+        return this.influence / ((1.0 - a) * enemyScissor.GetSharpness());
     }
 
     @Override
     public double CalculateAttackValue(HeavyRock enemyHeavyRock)
     {
-        return this.influence / (a * enemyHeavyRock.hardness * enemyHeavyRock.heat);
+        return this.influence / (a * enemyHeavyRock.GetHardness() * enemyHeavyRock.GetHeat());
     }
 
     @Override
@@ -80,7 +80,7 @@ public class Paper extends GameObject
     @Override
     public double CalculateAttackValue(MasterScissor enemyMasterScissor)
     {
-        return this.influence / ((1.0 - a) * enemyMasterScissor.sharpness * enemyMasterScissor.speed);
+        return this.influence / ((1.0 - a) * enemyMasterScissor.GetSharpness() * enemyMasterScissor.GetSpeed());
     }
 
     @Override

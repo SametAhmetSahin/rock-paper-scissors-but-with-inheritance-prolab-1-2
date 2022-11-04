@@ -4,11 +4,11 @@ import java.util.ArrayList;
 
 public abstract class Player
 {
-    protected long playerID;
-    protected String playerName;
-    protected long score;
+    private long playerID;
+    private String playerName;
+    private long score;
 
-    protected ArrayList<GameObject.GameObjectType> items = new ArrayList<>();
+    private ArrayList<GameObject.GameObjectType> items = new ArrayList<>();
 
     public Player()
     {

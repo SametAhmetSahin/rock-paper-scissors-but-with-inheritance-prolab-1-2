@@ -2,7 +2,7 @@ package GameObjects;
 
 public class MasterScissor extends Scissor
 {
-    protected double speed;
+    private double speed;
 
     public MasterScissor()
     {
@@ -54,13 +54,13 @@ public class MasterScissor extends Scissor
     @Override
     public double CalculateAttackValue(Rock enemyRock)
     {
-        return (this.sharpness * this.speed) / ((1.0 - a) * enemyRock.hardness);
+        return (super.GetSharpness() * this.speed) / ((1.0 - a) * enemyRock.GetHardness());
     }
 
     @Override
     public double CalculateAttackValue(Paper enemyPaper)
     {
-        return (this.sharpness * this.speed) / (a * enemyPaper.influence);
+        return (super.GetSharpness() * this.speed) / (a * enemyPaper.GetInfluence());
     }
 
     @Override
@@ -72,13 +72,13 @@ public class MasterScissor extends Scissor
     @Override
     public double CalculateAttackValue(HeavyRock enemyHeavyRock)
     {
-        return (this.sharpness * this.speed) / ((1.0 - a) * enemyHeavyRock.hardness * enemyHeavyRock.heat);
+        return (super.GetSharpness() * this.speed) / ((1.0 - a) * enemyHeavyRock.GetHardness() * enemyHeavyRock.GetHeat());
     }
 
     @Override
     public double CalculateAttackValue(SpecialPaper enemySpecialPaper)
     {
-        return (this.sharpness * this.speed) / (a * enemySpecialPaper.influence * enemySpecialPaper.thickness);
+        return (super.GetSharpness() * this.speed) / (a * enemySpecialPaper.GetInfluence() * enemySpecialPaper.GetThickness());
     }
 
     @Override

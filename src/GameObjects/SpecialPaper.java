@@ -2,7 +2,7 @@ package GameObjects;
 
 public class SpecialPaper extends Paper
 {
-    protected double thickness;
+    private double thickness;
 
     public SpecialPaper()
     {
@@ -54,7 +54,7 @@ public class SpecialPaper extends Paper
     @Override
     public double CalculateAttackValue(Rock enemyRock)
     {
-        return (this.influence * this.thickness) / (a * enemyRock.hardness);
+        return (super.GetInfluence() * this.thickness) / (a * enemyRock.GetHardness());
     }
 
     @Override
@@ -66,13 +66,13 @@ public class SpecialPaper extends Paper
     @Override
     public double CalculateAttackValue(Scissor enemyScissor)
     {
-        return (this.influence * this.thickness) / ((1.0 - a) * enemyScissor.sharpness);
+        return (super.GetInfluence() * this.thickness) / ((1.0 - a) * enemyScissor.GetSharpness());
     }
 
     @Override
     public double CalculateAttackValue(HeavyRock enemyHeavyRock)
     {
-        return (this.influence * this.thickness) / (a * enemyHeavyRock.hardness * enemyHeavyRock.heat);
+        return (super.GetInfluence() * this.thickness) / (a * enemyHeavyRock.GetHardness() * enemyHeavyRock.GetHeat());
     }
 
     @Override
@@ -84,7 +84,7 @@ public class SpecialPaper extends Paper
     @Override
     public double CalculateAttackValue(MasterScissor enemyMasterScissor)
     {
-        return (this.influence * this.thickness) / ((1.0 - a) * enemyMasterScissor.sharpness * enemyMasterScissor.speed);
+        return (super.GetInfluence() * this.thickness) / ((1.0 - a) * enemyMasterScissor.GetSharpness() * enemyMasterScissor.GetSpeed());
     }
 
     @Override

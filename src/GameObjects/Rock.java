@@ -2,7 +2,7 @@ package GameObjects;
 
 public class Rock extends GameObject
 {
-    protected double hardness;
+    private double hardness;
 
     public Rock()
     {
@@ -56,13 +56,13 @@ public class Rock extends GameObject
     @Override
     public double CalculateAttackValue(Paper enemyPaper)
     {
-        return this.hardness / ((1.0 - a) * enemyPaper.influence);
+        return this.hardness / ((1.0 - a) * enemyPaper.GetInfluence());
     }
 
     @Override
     public double CalculateAttackValue(Scissor enemyScissor)
     {
-        return this.hardness / (a * enemyScissor.sharpness);
+        return this.hardness / (a * enemyScissor.GetSharpness());
     }
 
     @Override
@@ -74,13 +74,13 @@ public class Rock extends GameObject
     @Override
     public double CalculateAttackValue(SpecialPaper enemySpecialPaper)
     {
-        return this.hardness / ((1.0 - a) * enemySpecialPaper.influence * enemySpecialPaper.thickness);
+        return this.hardness / ((1.0 - a) * enemySpecialPaper.GetInfluence() * enemySpecialPaper.GetThickness());
     }
 
     @Override
     public double CalculateAttackValue(MasterScissor enemyMasterScissor)
     {
-        return this.hardness / (a * enemyMasterScissor.sharpness * enemyMasterScissor.speed);
+        return this.hardness / (a * enemyMasterScissor.GetSharpness() * enemyMasterScissor.GetSpeed());
     }
 
     @Override

@@ -4,22 +4,22 @@ public class ComputerPlayer extends Player
 {
     public ComputerPlayer()
     {
-        super.playerID = 0;
-        super.playerName = "Computer";
-        super.score = 0;
+        super.SetPlayerID(0);
+        super.SetPlayerName("Computer");
+        super.SetPlayerScore(0);
     }
 
     public ComputerPlayer(long ID, String name)
     {
-        super.playerID = ID;
-        super.playerName = name;
-        super.score = 0;
+        super.SetPlayerID(ID);
+        super.SetPlayerName(name);
+        super.SetPlayerScore(0);
     }
 
     public ComputerPlayer(long ID, String name, long startScore)
     {
-        super.playerID = ID;
-        super.playerName = name;
-        super.score = startScore;
+        super.SetPlayerID(ID);
+        super.SetPlayerName(name);
+        super.SetPlayerScore(startScore);
     }
 }
