@@ -12,7 +12,7 @@ public abstract class Player
     private ArrayList<GameObject> deckItems = new ArrayList<>();
     final Random rng = new Random();
 
-    public Player()
+    protected Player()
     {
         this.playerID = this.rng.nextLong();
         this.playerName = "Player";
@@ -20,7 +20,7 @@ public abstract class Player
         InitializeDeck();
     }
 
-    public Player(long id, String name)
+    protected Player(long id, String name)
     {
         this.playerID = id;
         this.playerName = name;
@@ -28,7 +28,7 @@ public abstract class Player
         InitializeDeck();
     }
 
-    public Player(long id, String name, long startScore)
+    protected Player(long id, String name, long startScore)
     {
         this.playerID = id;
         this.playerName = name;
@@ -36,37 +36,37 @@ public abstract class Player
         InitializeDeck();
     }
 
-    public void SetPlayerID(long newID)
+    protected void SetPlayerID(long newID)
     {
         this.playerID = newID;
     }
 
-    public void SetPlayerName(String newName)
+    protected void SetPlayerName(String newName)
     {
         this.playerName = newName;
     }
 
-    public void SetPlayerScore(long newScore)
+    protected void SetPlayerScore(long newScore)
     {
         this.score = newScore;
     }
 
-    public long GetPlayerID()
+    protected long GetPlayerID()
     {
         return this.playerID;
     }
 
-    public String GetPlayerName()
+    protected String GetPlayerName()
     {
         return this.playerName;
     }
 
-    public long GetPlayerScore()
+    protected long GetPlayerScore()
     {
         return this.score;
     }
 
-    public void InitializeDeck()
+    protected void InitializeDeck()
     {
         for(byte i = 0; i < 5; i++)
         {
@@ -79,31 +79,31 @@ public abstract class Player
         }
     }
 
-    public ArrayList<GameObject> GetItemDeck()
+    protected ArrayList<GameObject> GetItemDeck()
     {
         return this.deckItems;
     }
 
-    public void RemoveItem(GameObject disqualified)
+    protected void RemoveItem(GameObject disqualified)
     {
         this.deckItems.remove(disqualified);
     }
 
-    public void UpdateItem(GameObject obsolete, GameObject newItem)
+    protected void UpgradeItem(GameObject obsolete)
     {
         GameObject toAdded;
 
         switch(obsolete.GetType())
         {
-            case Rock -> toAdded = new HeavyRock(obsolete.GetDurability(), obsolete.GetLevelPoint());
             case Paper -> toAdded = new SpecialPaper(obsolete.GetDurability(), obsolete.GetLevelPoint());
             case Scissor -> toAdded = new MasterScissor(obsolete.GetDurability(), obsolete.GetLevelPoint());
+            default -> toAdded = new HeavyRock(obsolete.GetDurability(), obsolete.GetLevelPoint());
         }
 
-        this.deckItems.set(this.deckItems.indexOf(obsolete), newItem);
+        this.deckItems.set(this.deckItems.indexOf(obsolete), toAdded);
     }
 
-    public void ShowScore()
+    protected void ShowScore()
     {
         System.out.println();
         System.out.println("=================================================================");
@@ -111,5 +111,10 @@ public abstract class Player
         System.out.println("Player's Name: " + this.playerName);
         System.out.println("Player's Score = " + this.score);
         System.out.println("=================================================================");
+    }
+
+    protected void SelectItem()
+    {
+
     }
 }

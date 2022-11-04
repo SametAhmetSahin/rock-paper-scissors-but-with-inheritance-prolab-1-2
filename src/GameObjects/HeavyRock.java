@@ -4,7 +4,7 @@ public class HeavyRock extends Rock
 {
     private double heat;
 
-    public HeavyRock()
+    protected HeavyRock()
     {
         super.SetDurability(20.0);
         super.SetLevelPoint(0.0);
@@ -13,7 +13,7 @@ public class HeavyRock extends Rock
         this.heat = 2.0;
     }
 
-    public HeavyRock(double startDurability, double startLevelPoint)
+    protected HeavyRock(double startDurability, double startLevelPoint)
     {
         super.SetDurability(startDurability);
         super.SetLevelPoint(startLevelPoint);
@@ -22,7 +22,7 @@ public class HeavyRock extends Rock
         this.heat = 2.0;
     }
 
-    public HeavyRock(double startDurability, double startLevelPoint, double startHardness, double startHeat)
+    protected HeavyRock(double startDurability, double startLevelPoint, double startHardness, double startHeat)
     {
         super.SetDurability(startDurability);
         super.SetLevelPoint(startLevelPoint);
@@ -31,18 +31,18 @@ public class HeavyRock extends Rock
         this.heat = startHeat;
     }
 
-    public void SetHeat(double newHeat)
+    protected void SetHeat(double newHeat)
     {
         this.heat = newHeat;
     }
 
-    public double GetHeat()
+    protected double GetHeat()
     {
         return this.heat;
     }
 
     @Override
-    public void ShowObjectStats()
+    protected void ShowObjectStats()
     {
         System.out.println();
         System.out.println("=================================================================");
@@ -55,43 +55,43 @@ public class HeavyRock extends Rock
     }
 
     @Override
-    public double CalculateAttackValue(Rock enemyRock)
+    protected double CalculateAttackValue(Rock enemyRock)
     {
         return 0;   // Çünkü ağır taşın taşa karşı bir etkisi olamaz.
     }
 
     @Override
-    public double CalculateAttackValue(Paper enemyPaper)
+    protected double CalculateAttackValue(Paper enemyPaper)
     {
         return (super.GetHardness() * this.heat) / ((1.0 - a) * enemyPaper.GetInfluence());
     }
 
     @Override
-    public double CalculateAttackValue(Scissor enemyScissor)
+    protected double CalculateAttackValue(Scissor enemyScissor)
     {
         return (super.GetHardness() * this.heat) / (a * enemyScissor.GetSharpness());
     }
 
     @Override
-    public double CalculateAttackValue(HeavyRock enemyHeavyRock)
+    protected double CalculateAttackValue(HeavyRock enemyHeavyRock)
     {
         return 0;   // Çünkü ağır taşın ağır taşa karşı bir etkisi olamaz.
     }
 
     @Override
-    public double CalculateAttackValue(SpecialPaper enemySpecialPaper)
+    protected double CalculateAttackValue(SpecialPaper enemySpecialPaper)
     {
         return (super.GetHardness() * this.heat) / ((1.0 - a) * enemySpecialPaper.GetInfluence() * enemySpecialPaper.GetThickness());
     }
 
     @Override
-    public double CalculateAttackValue(MasterScissor enemyMasterScissor)
+    protected double CalculateAttackValue(MasterScissor enemyMasterScissor)
     {
         return (super.GetHardness() * this.heat) / (a * enemyMasterScissor.GetSharpness() * enemyMasterScissor.GetSpeed());
     }
 
     @Override
-    public int UpdateStats(long addToDurability, long addToLevelPoint)
+    protected int UpdateStats(long addToDurability, long addToLevelPoint)
     {
         this.SetDurability(this.GetDurability() + addToDurability);
         this.SetLevelPoint(this.GetLevelPoint() + addToLevelPoint);

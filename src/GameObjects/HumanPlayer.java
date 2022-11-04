@@ -2,7 +2,7 @@ package GameObjects;
 
 public class HumanPlayer extends Player
 {
-    public HumanPlayer()
+    protected HumanPlayer()
     {
         super.SetPlayerID(this.rng.nextLong());
         super.SetPlayerName("Human");
@@ -10,7 +10,7 @@ public class HumanPlayer extends Player
         super.InitializeDeck();
     }
 
-    public HumanPlayer(long ID, String name)
+    protected HumanPlayer(long ID, String name)
     {
         super.SetPlayerID(ID);
         super.SetPlayerName(name);
@@ -18,7 +18,7 @@ public class HumanPlayer extends Player
         super.InitializeDeck();
     }
 
-    public HumanPlayer(long ID, String name, long startScore)
+    protected HumanPlayer(long ID, String name, long startScore)
     {
         super.SetPlayerID(ID);
         super.SetPlayerName(name);
@@ -27,7 +27,7 @@ public class HumanPlayer extends Player
     }
 
     @Override
-    public void ShowScore()
+    protected void ShowScore()
     {
         System.out.println();
         System.out.println("=================================================================");
@@ -35,5 +35,11 @@ public class HumanPlayer extends Player
         System.out.println("Player's Name: " + super.GetPlayerName());
         System.out.println("Player's Score = " + super.GetPlayerScore());
         System.out.println("=================================================================");
+    }
+
+    @Override
+    protected void SelectItem()
+    {
+
     }
 }

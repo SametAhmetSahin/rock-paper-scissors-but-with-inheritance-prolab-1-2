@@ -17,50 +17,50 @@ public abstract class GameObject
     private double levelPoint;
     protected double a = 0.2;
 
-    public GameObject()
+    protected GameObject()
     {
         // Dökümanda belirtilen varsayılan değerler
         this.durability = 20.0;
         this.levelPoint = 0.0;
     }
 
-    public GameObject(double startDurability, double startLevelPoint)
+    protected GameObject(double startDurability, double startLevelPoint)
     {
         this.durability = startDurability;
         this.levelPoint = startLevelPoint;
     }
 
-    public void SetDurability(double newDurability)
+    protected void SetDurability(double newDurability)
     {
         this.durability = newDurability;
     }
 
-    public void SetLevelPoint(double newLevelPoint)
+    protected void SetLevelPoint(double newLevelPoint)
     {
         this.levelPoint = newLevelPoint;
     }
 
-    public void SetType(GameObjectType newType)
+    protected void SetType(GameObjectType newType)
     {
         this.type = newType;
     }
 
-    public double GetDurability()
+    protected double GetDurability()
     {
         return this.durability;
     }
 
-    public double GetLevelPoint()
+    protected double GetLevelPoint()
     {
         return this.levelPoint;
     }
 
-    public GameObjectType GetType()
+    protected GameObjectType GetType()
     {
         return this.type;
     }
 
-    public void ShowObjectStats()
+    protected void ShowObjectStats()
     {
         System.out.println();
         System.out.println("=================================================================");
@@ -69,37 +69,37 @@ public abstract class GameObject
         System.out.println("=================================================================");
     }
 
-    public double CalculateAttackValue(Rock enemyRock)
+    protected double CalculateAttackValue(Rock enemyRock)
     {
         return 2.0 + 2.0;
     }
 
-    public double CalculateAttackValue(Paper enemyPaper)
+    protected double CalculateAttackValue(Paper enemyPaper)
     {
         return 2.0 + 2.0;
     }
 
-    public double CalculateAttackValue(Scissor enemyScissor)
+    protected double CalculateAttackValue(Scissor enemyScissor)
     {
         return 2.0 + 2.0;
     }
 
-    public double CalculateAttackValue(HeavyRock enemyHeavyRock)
+    protected double CalculateAttackValue(HeavyRock enemyHeavyRock)
     {
         return 2.0 + 2.0;
     }
 
-    public double CalculateAttackValue(SpecialPaper enemySpecialPaper)
+    protected double CalculateAttackValue(SpecialPaper enemySpecialPaper)
     {
         return 2.0 + 2.0;
     }
 
-    public double CalculateAttackValue(MasterScissor enemyMasterScissor)
+    protected double CalculateAttackValue(MasterScissor enemyMasterScissor)
     {
         return 2.0 + 2.0;
     }
 
-    public int UpdateStats(long addToDurability, long addToLevelPoint)
+    protected int UpdateStats(long addToDurability, long addToLevelPoint)
     {
         System.out.println("Something happened.");
         return 0;

@@ -4,7 +4,7 @@ public class Scissor extends GameObject
 {
     private double sharpness;
 
-    public Scissor()
+    protected Scissor()
     {
         super.SetDurability(20.0);
         super.SetLevelPoint(0.0);
@@ -12,7 +12,7 @@ public class Scissor extends GameObject
         sharpness = 2.0;
     }
 
-    public Scissor(double startDurability, double startLevelPoint)
+    protected Scissor(double startDurability, double startLevelPoint)
     {
         super.SetDurability(startDurability);
         super.SetLevelPoint(startLevelPoint);
@@ -20,7 +20,7 @@ public class Scissor extends GameObject
         this.sharpness = 2.0;
     }
 
-    public Scissor(double startDurability, double startLevelPoint, double startSharpness)
+    protected Scissor(double startDurability, double startLevelPoint, double startSharpness)
     {
         super.SetDurability(startDurability);
         super.SetLevelPoint(startLevelPoint);
@@ -28,18 +28,18 @@ public class Scissor extends GameObject
         this.sharpness = startSharpness;
     }
 
-    public void SetSharpness(double newSharpness)
+    protected void SetSharpness(double newSharpness)
     {
         this.sharpness = newSharpness;
     }
 
-    public double GetSharpness()
+    protected double GetSharpness()
     {
         return this.sharpness;
     }
 
     @Override
-    public void ShowObjectStats()
+    protected void ShowObjectStats()
     {
         System.out.println();
         System.out.println("=================================================================");
@@ -51,43 +51,43 @@ public class Scissor extends GameObject
     }
 
     @Override
-    public double CalculateAttackValue(Rock enemyRock)
+    protected double CalculateAttackValue(Rock enemyRock)
     {
         return this.sharpness / ((1.0 - super.a) * enemyRock.GetHardness());
     }
 
     @Override
-    public double CalculateAttackValue(Paper enemyPaper)
+    protected double CalculateAttackValue(Paper enemyPaper)
     {
         return this.sharpness / (a * enemyPaper.GetInfluence());
     }
 
     @Override
-    public double CalculateAttackValue(Scissor enemyScissor)
+    protected double CalculateAttackValue(Scissor enemyScissor)
     {
         return 0;   // Çünkü makasın makasa karşı bir etkisi olamaz.
     }
 
     @Override
-    public double CalculateAttackValue(HeavyRock enemyHeavyRock)
+    protected double CalculateAttackValue(HeavyRock enemyHeavyRock)
     {
         return this.sharpness / ((1.0 - a) * enemyHeavyRock.GetHardness() * enemyHeavyRock.GetHeat());
     }
 
     @Override
-    public double CalculateAttackValue(SpecialPaper enemySpecialPaper)
+    protected double CalculateAttackValue(SpecialPaper enemySpecialPaper)
     {
         return this.sharpness / (a * enemySpecialPaper.GetInfluence() * enemySpecialPaper.GetThickness());
     }
 
     @Override
-    public double CalculateAttackValue(MasterScissor enemyMasterScissor)
+    protected double CalculateAttackValue(MasterScissor enemyMasterScissor)
     {
         return 0;   // Çünkü makasın usta makasa karşı bir etkisi olamaz.
     }
 
     @Override
-    public int UpdateStats(long addToDurability, long addToLevelPoint)
+    protected int UpdateStats(long addToDurability, long addToLevelPoint)
     {
         this.SetDurability(this.GetDurability() + addToDurability);
         this.SetLevelPoint(this.GetLevelPoint() + addToLevelPoint);

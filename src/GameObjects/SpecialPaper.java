@@ -4,7 +4,7 @@ public class SpecialPaper extends Paper
 {
     private double thickness;
 
-    public SpecialPaper()
+    protected SpecialPaper()
     {
         super.SetDurability(20.0);
         super.SetLevelPoint(0.0);
@@ -13,7 +13,7 @@ public class SpecialPaper extends Paper
         this.thickness = 2.0;
     }
 
-    public SpecialPaper(double startDurability, double startLevelPoint)
+    protected SpecialPaper(double startDurability, double startLevelPoint)
     {
         super.SetDurability(startDurability);
         super.SetLevelPoint(startLevelPoint);
@@ -22,7 +22,7 @@ public class SpecialPaper extends Paper
         this.thickness = 2.0;
     }
 
-    public SpecialPaper(double startDurability, double startLevelPoint, double startInfluence, double startThickness)
+    protected SpecialPaper(double startDurability, double startLevelPoint, double startInfluence, double startThickness)
     {
         super.SetDurability(startDurability);
         super.SetLevelPoint(startLevelPoint);
@@ -31,18 +31,18 @@ public class SpecialPaper extends Paper
         this.thickness = startThickness;
     }
 
-    public void SetThickness(double newThickness)
+    protected void SetThickness(double newThickness)
     {
         this.thickness = newThickness;
     }
 
-    public double GetThickness()
+    protected double GetThickness()
     {
         return this.thickness;
     }
 
     @Override
-    public void ShowObjectStats()
+    protected void ShowObjectStats()
     {
         System.out.println();
         System.out.println("=================================================================");
@@ -55,43 +55,43 @@ public class SpecialPaper extends Paper
     }
 
     @Override
-    public double CalculateAttackValue(Rock enemyRock)
+    protected double CalculateAttackValue(Rock enemyRock)
     {
         return (super.GetInfluence() * this.thickness) / (a * enemyRock.GetHardness());
     }
 
     @Override
-    public double CalculateAttackValue(Paper enemyPaper)
+    protected double CalculateAttackValue(Paper enemyPaper)
     {
         return 0;   // Çünkü özel kağıdın kağıda karşı bir etkisi olamaz.
     }
 
     @Override
-    public double CalculateAttackValue(Scissor enemyScissor)
+    protected double CalculateAttackValue(Scissor enemyScissor)
     {
         return (super.GetInfluence() * this.thickness) / ((1.0 - a) * enemyScissor.GetSharpness());
     }
 
     @Override
-    public double CalculateAttackValue(HeavyRock enemyHeavyRock)
+    protected double CalculateAttackValue(HeavyRock enemyHeavyRock)
     {
         return (super.GetInfluence() * this.thickness) / (a * enemyHeavyRock.GetHardness() * enemyHeavyRock.GetHeat());
     }
 
     @Override
-    public double CalculateAttackValue(SpecialPaper enemySpecialPaper)
+    protected double CalculateAttackValue(SpecialPaper enemySpecialPaper)
     {
         return 0;   // Çünkü özel kağıdın özel kağıda karşı bir etkisi olamaz.
     }
 
     @Override
-    public double CalculateAttackValue(MasterScissor enemyMasterScissor)
+    protected double CalculateAttackValue(MasterScissor enemyMasterScissor)
     {
         return (super.GetInfluence() * this.thickness) / ((1.0 - a) * enemyMasterScissor.GetSharpness() * enemyMasterScissor.GetSpeed());
     }
 
     @Override
-    public int UpdateStats(long addToDurability, long addToLevelPoint)
+    protected int UpdateStats(long addToDurability, long addToLevelPoint)
     {
         this.SetDurability(this.GetDurability() + addToDurability);
         this.SetLevelPoint(this.GetLevelPoint() + addToLevelPoint);
