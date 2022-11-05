@@ -5,11 +5,25 @@ import java.util.Random;
 
 public abstract class Player
 {
+    private class DeckItem
+    {
+        GameObject object;
+        boolean isUsed;
+        long id;
+
+        DeckItem(GameObject startItem, long startID)
+        {
+            this.object = startItem;
+            this.isUsed = false;
+            this.id = startID;
+        }
+    }
+
     private long playerID;
     private String playerName;
     private long score;
 
-    private ArrayList<GameObject> deckItems = new ArrayList<>();
+    private ArrayList<DeckItem> deck = new ArrayList<>();
     final Random rng = new Random();
 
     protected Player()
@@ -72,35 +86,35 @@ public abstract class Player
         {
             switch (this.rng.nextInt(3))
             {
-                case 0 -> this.deckItems.add(new Rock());
-                case 1 -> this.deckItems.add(new Paper());
-                case 2 -> this.deckItems.add(new Scissor());
+                case 0 -> this.deck.add(new DeckItem(new Rock(), i));
+                case 1 -> this.deck.add(new DeckItem(new Paper(), i));
+                case 2 -> this.deck.add(new DeckItem(new Scissor(), i));
             }
         }
     }
 
-    protected ArrayList<GameObject> GetItemDeck()
+    protected ArrayList<DeckItem> GetItemDeck()
     {
-        return this.deckItems;
+        return this.deck;
     }
 
-    protected void RemoveItem(GameObject disqualified)
+    protected void RemoveItem(DeckItem disqualified)
     {
-        this.deckItems.remove(disqualified);
+        this.deck.remove(disqualified);
     }
 
-    protected void UpgradeItem(GameObject obsolete)
+    protected void UpgradeItem(DeckItem obsolete)
     {
-        GameObject toAdded;
+        DeckItem toAdded;
 
-        switch(obsolete.GetType())
+        switch(obsolete.object.GetType())
         {
-            case Paper -> toAdded = new SpecialPaper(obsolete.GetDurability(), obsolete.GetLevelPoint());
-            case Scissor -> toAdded = new MasterScissor(obsolete.GetDurability(), obsolete.GetLevelPoint());
-            default -> toAdded = new HeavyRock(obsolete.GetDurability(), obsolete.GetLevelPoint());
+            case Paper -> toAdded = new DeckItem(new SpecialPaper(obsolete.object.GetDurability(), obsolete.object.GetLevelPoint()), obsolete.id);
+            case Scissor -> toAdded = new DeckItem(new MasterScissor(obsolete.object.GetDurability(), obsolete.object.GetLevelPoint()), obsolete.id);
+            default -> toAdded = new DeckItem(new HeavyRock(obsolete.object.GetDurability(), obsolete.object.GetLevelPoint()), obsolete.id);
         }
 
-        this.deckItems.set(this.deckItems.indexOf(obsolete), toAdded);
+        this.deck.set(this.deck.indexOf(obsolete), toAdded);
     }
 
     protected void ShowScore()
