@@ -38,8 +38,8 @@ public class ComputerPlayer extends Player
     }
 
     @Override
-    protected void SelectItem()
+    protected DeckItem SelectItem(int selection)
     {
-
+        return super.GetItemDeck().get(super.rng.nextInt(5));
     }
 }

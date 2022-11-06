@@ -5,7 +5,7 @@ import java.util.Random;
 
 public abstract class Player
 {
-    private class DeckItem
+    protected class DeckItem
     {
         GameObject object;
         boolean isUsed;
@@ -127,8 +127,8 @@ public abstract class Player
         System.out.println("=================================================================");
     }
 
-    protected void SelectItem()
+    protected DeckItem SelectItem(int selection)
     {
-
+        return null;
     }
 }
