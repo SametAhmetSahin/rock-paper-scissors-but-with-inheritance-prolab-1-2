@@ -40,6 +40,11 @@ public class ComputerPlayer extends Player
     @Override
     protected DeckItem SelectItem(int selection)
     {
-        return super.GetItemDeck().get(super.rng.nextInt(5));
+        do
+        {
+            selection = super.rng.nextInt(5);
+        } while(super.GetItemDeck().get(selection).isUsed);
+
+        return super.GetItemDeck().get(selection);
     }
 }
