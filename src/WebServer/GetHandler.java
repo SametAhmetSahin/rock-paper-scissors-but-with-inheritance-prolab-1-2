@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpHandler;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.reflect.Array;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,23 +16,25 @@ public class GetHandler implements HttpHandler {
 
     public void handle(HttpExchange he) throws IOException {
         // parse request
-        Map<String, Object> parameters = new HashMap<String, Object>();
         URI requestedUri = he.getRequestURI();
         String query = requestedUri.getRawQuery();
-        /*
-        parseQuery(query, parameters);
+        String[] QueryPairs = query.split("&");
+        HashMap<String, String> QueryData = new HashMap<String, String>();
+        for (String pair : QueryPairs) {
+            QueryData.put(pair.split("=")[0], pair.split("=")[1]);
+        }
 
 
         // send response
         String response = "";
-        for (String key : parameters.keySet())
-            response += key + " = " + parameters.get(key) + "\n";
+        for (String key : QueryData.keySet())
+            response += key + " = " + QueryData.get(key) + "\n";
         he.sendResponseHeaders(200, response.length());
         OutputStream os = he.getResponseBody();
         os.write(response.toString().getBytes());
 
         os.close();
-        */
-        System.out.println(query);
+
+        System.out.println("query: " + query);
     }
 }
