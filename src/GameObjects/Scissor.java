@@ -9,7 +9,7 @@ public class Scissor extends GameObject
         super.SetDurability(20.0);
         super.SetLevelPoint(0.0);
         super.SetType(GameObjectType.Scissor);
-        sharpness = 2.0;
+        this.sharpness = 2.0;
     }
 
     protected Scissor(double startDurability, double startLevelPoint)
