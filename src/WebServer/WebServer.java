@@ -13,7 +13,7 @@ public class WebServer {
         System.out.println("server started at " + port);
         server.createContext("/", new RootHandler());
         server.createContext("/get", new GetHandler());
-        //server.createContext("/post", new PostHandler());
+        server.createContext("/post", new PostHandler());
         /*
         server.createContext("/echoHeader", new EchoHeaderHandler());
 
