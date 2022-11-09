@@ -57,7 +57,9 @@ public class HeavyRock extends Rock
     @Override
     protected double CalculateAttackValue(Rock enemyRock)
     {
-        return 0;   // Çünkü ağır taşın taşa karşı bir etkisi olamaz.
+        // Dökümanda aynı tip nesnelerin birbirlerine karşı etkilerinin hesaplanmasına dair bir formül yer almaması nedeniyle
+        // dökümandaki formüller esas alınmak suretiyle en gerçekçi formül oluşturulmaya çalışılmıştır.
+        return (super.GetHardness() * this.heat) / enemyRock.GetHardness();
     }
 
     @Override
@@ -75,7 +77,9 @@ public class HeavyRock extends Rock
     @Override
     protected double CalculateAttackValue(HeavyRock enemyHeavyRock)
     {
-        return 0;   // Çünkü ağır taşın ağır taşa karşı bir etkisi olamaz.
+        // Dökümanda aynı tip nesnelerin birbirlerine karşı etkilerinin hesaplanmasına dair bir formül yer almaması nedeniyle
+        // dökümandaki formüller esas alınmak suretiyle en gerçekçi formül oluşturulmaya çalışılmıştır.
+        return (super.GetHardness() * this.heat) / (enemyHeavyRock.GetHardness() * enemyHeavyRock.GetHeat());
     }
 
     @Override

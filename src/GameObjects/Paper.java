@@ -59,7 +59,9 @@ public class Paper extends GameObject
     @Override
     protected double CalculateAttackValue(Paper enemyPaper)
     {
-        return 0;   // Çünkü kağıdın kağıda karşı bir etkisi olamaz.
+        // Dökümanda aynı tip nesnelerin birbirlerine karşı etkilerinin hesaplanmasına dair bir formül yer almaması nedeniyle
+        // dökümandaki formüller esas alınmak suretiyle en gerçekçi formül oluşturulmaya çalışılmıştır.
+        return this.influence / enemyPaper.GetInfluence();
     }
 
     @Override
@@ -77,7 +79,9 @@ public class Paper extends GameObject
     @Override
     protected double CalculateAttackValue(SpecialPaper enemySpecialPaper)
     {
-        return 0;   // Çünkü kağıdın özel kağıda karşı bir etkisi olamaz.
+        // Dökümanda aynı tip nesnelerin birbirlerine karşı etkilerinin hesaplanmasına dair bir formül yer almaması nedeniyle
+        // dökümandaki formüller esas alınmak suretiyle en gerçekçi formül oluşturulmaya çalışılmıştır.
+        return this.influence / (enemySpecialPaper.GetInfluence() * enemySpecialPaper.GetThickness());
     }
 
     @Override

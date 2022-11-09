@@ -63,7 +63,9 @@ public class SpecialPaper extends Paper
     @Override
     protected double CalculateAttackValue(Paper enemyPaper)
     {
-        return 0;   // Çünkü özel kağıdın kağıda karşı bir etkisi olamaz.
+        // Dökümanda aynı tip nesnelerin birbirlerine karşı etkilerinin hesaplanmasına dair bir formül yer almaması nedeniyle
+        // dökümandaki formüller esas alınmak suretiyle en gerçekçi formül oluşturulmaya çalışılmıştır.
+        return (super.GetInfluence() * this.thickness) / enemyPaper.GetInfluence();
     }
 
     @Override
@@ -81,7 +83,9 @@ public class SpecialPaper extends Paper
     @Override
     protected double CalculateAttackValue(SpecialPaper enemySpecialPaper)
     {
-        return 0;   // Çünkü özel kağıdın özel kağıda karşı bir etkisi olamaz.
+        // Dökümanda aynı tip nesnelerin birbirlerine karşı etkilerinin hesaplanmasına dair bir formül yer almaması nedeniyle
+        // dökümandaki formüller esas alınmak suretiyle en gerçekçi formül oluşturulmaya çalışılmıştır.
+        return (super.GetInfluence() * this.thickness) / (enemySpecialPaper.GetInfluence() * enemySpecialPaper.GetThickness());
     }
 
     @Override

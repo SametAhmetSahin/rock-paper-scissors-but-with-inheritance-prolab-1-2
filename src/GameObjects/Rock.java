@@ -53,7 +53,9 @@ public class Rock extends GameObject
     @Override
     protected double CalculateAttackValue(Rock enemyRock)
     {
-        return 0;   // Çünkü taşın taşa karşı bir etkisi olamaz.
+        // Dökümanda aynı tip nesnelerin birbirlerine karşı etkilerinin hesaplanmasına dair bir formül yer almaması nedeniyle
+        // dökümandaki formüller esas alınmak suretiyle en gerçekçi formül oluşturulmaya çalışılmıştır.
+        return this.hardness / enemyRock.GetHardness();
     }
 
     @Override
@@ -71,7 +73,9 @@ public class Rock extends GameObject
     @Override
     protected double CalculateAttackValue(HeavyRock enemyHeavyRock)
     {
-        return 0;   // Çünkü taşın ağır taşa karşı bir etkisi olamaz.
+        // Dökümanda aynı tip nesnelerin birbirlerine karşı etkilerinin hesaplanmasına dair bir formül yer almaması nedeniyle
+        // dökümandaki formüller esas alınmak suretiyle en gerçekçi formül oluşturulmaya çalışılmıştır.
+        return this.hardness / (enemyHeavyRock.GetHardness() * enemyHeavyRock.GetHeat());
     }
 
     @Override

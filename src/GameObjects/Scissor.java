@@ -65,7 +65,9 @@ public class Scissor extends GameObject
     @Override
     protected double CalculateAttackValue(Scissor enemyScissor)
     {
-        return 0;   // Çünkü makasın makasa karşı bir etkisi olamaz.
+        // Dökümanda aynı tip nesnelerin birbirlerine karşı etkilerinin hesaplanmasına dair bir formül yer almaması nedeniyle
+        // dökümandaki formüller esas alınmak suretiyle en gerçekçi formül oluşturulmaya çalışılmıştır.
+        return this.sharpness / enemyScissor.GetSharpness();
     }
 
     @Override
@@ -83,7 +85,9 @@ public class Scissor extends GameObject
     @Override
     protected double CalculateAttackValue(MasterScissor enemyMasterScissor)
     {
-        return 0;   // Çünkü makasın usta makasa karşı bir etkisi olamaz.
+        // Dökümanda aynı tip nesnelerin birbirlerine karşı etkilerinin hesaplanmasına dair bir formül yer almaması nedeniyle
+        // dökümandaki formüller esas alınmak suretiyle en gerçekçi formül oluşturulmaya çalışılmıştır.
+        return this.sharpness / (enemyMasterScissor.GetSharpness() * enemyMasterScissor.GetSpeed());
     }
 
     @Override
