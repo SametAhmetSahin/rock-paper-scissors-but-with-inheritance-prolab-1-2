@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 
 public class WebServer {
-    public static void main(String[] args) throws IOException {
-
-        int port = 8080;
+    public void Start(int port) throws IOException
+    {
+        //int port = 8080;
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
         System.out.println("server started at " + port);
         server.createContext("/", new RootHandler());
