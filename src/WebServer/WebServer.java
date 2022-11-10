@@ -9,7 +9,6 @@ public class WebServer
 {
     public void Start(int port) throws IOException
     {
-        //int port = 8080;
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
         System.out.println("server started at " + port);
 

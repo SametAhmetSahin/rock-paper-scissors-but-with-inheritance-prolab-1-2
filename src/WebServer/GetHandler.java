@@ -19,12 +19,11 @@ public class GetHandler implements HttpHandler
         String query = requestedUri.getRawQuery();
         HashMap<String, String> queryData = parseQuery(query);
 
-
         // send response
         String response = "";
         for (String key : queryData.keySet())
             response += key + " = " + queryData.get(key) + "\n";
-        //response = queryData.toString();
+
         he.sendResponseHeaders(200, response.length());
         OutputStream os = he.getResponseBody();
         os.write(response.getBytes());

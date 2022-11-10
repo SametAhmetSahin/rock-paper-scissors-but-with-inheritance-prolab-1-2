@@ -9,16 +9,13 @@ import java.util.HashMap;
 
 public class RootHandler implements HttpHandler
 {
-    public static HashMap parseQuery(String query)
+    public static HashMap<String, String> parseQuery(String query)
     {
-
         String[] queryPairs = query.split("&");
-        HashMap<String, String> queryData = new HashMap();
+        HashMap<String, String> queryData = new HashMap<>();
 
         for (String pair : queryPairs)
-        {
             queryData.put(pair.split("=")[0], pair.split("=")[1]);
-        }
 
         return queryData;
     }
