@@ -7,24 +7,30 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
 
-public class RootHandler implements HttpHandler {
-
-    public static HashMap parseQuery(String query) {
+public class RootHandler implements HttpHandler
+{
+    public static HashMap parseQuery(String query)
+    {
 
         String[] queryPairs = query.split("&");
         HashMap<String, String> queryData = new HashMap();
-        for (String pair : queryPairs) {
+
+        for (String pair : queryPairs)
+        {
             queryData.put(pair.split("=")[0], pair.split("=")[1]);
         }
+
         return queryData;
     }
+
     @Override
-
-
-    public void handle(HttpExchange he) throws IOException {
+    public void handle(HttpExchange he) throws IOException
+    {
         String response = "<h1>Server start success " +
         "if you see this message </h1 > " + " Merhaba Nusret ";
+
         he.sendResponseHeaders(200, response.length());
+
         OutputStream os = he.getResponseBody();
         os.write(response.getBytes());
         os.close();

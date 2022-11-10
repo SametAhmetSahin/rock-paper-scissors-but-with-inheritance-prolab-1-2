@@ -9,12 +9,11 @@ import java.net.URI;
 import java.util.HashMap;
 
 import static WebServer.RootHandler.parseQuery;
-public class GetHandler implements HttpHandler {
-
-
+public class GetHandler implements HttpHandler
+{
     @Override
-
-    public void handle(HttpExchange he) throws IOException {
+    public void handle(HttpExchange he) throws IOException
+    {
         // parse request
         URI requestedUri = he.getRequestURI();
         String query = requestedUri.getRawQuery();

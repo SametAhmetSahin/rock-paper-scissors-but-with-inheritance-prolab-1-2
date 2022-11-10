@@ -13,21 +13,21 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-
 import static WebServer.RootHandler.parseQuery;
 
-public class PostHandler implements HttpHandler {
-
+public class PostHandler implements HttpHandler
+{
     @Override
-
-    public void handle(HttpExchange he) throws IOException {
+    public void handle(HttpExchange he) throws IOException
+    {
         // parse request
-
         InputStreamReader isr = new InputStreamReader(he.getRequestBody(), "utf-8");
         BufferedReader br = new BufferedReader(isr);
         String query = br.readLine();
         //HashMap<String, String> queryData = parseQuery(query);
+
         System.out.println("query: " + query);
+
         JSONObject jo = null;
         try {
             jo = (JSONObject) new JSONParser().parse(query);
@@ -36,12 +36,12 @@ public class PostHandler implements HttpHandler {
             throw new RuntimeException(e);
         }
 
-
         // send response
         String response = "";
         response = jo.toString();
         System.out.println("response:" + response);
         he.sendResponseHeaders(200, response.length());
+
         OutputStream os = he.getResponseBody();
         os.write(response.toString().getBytes());
         os.close();
