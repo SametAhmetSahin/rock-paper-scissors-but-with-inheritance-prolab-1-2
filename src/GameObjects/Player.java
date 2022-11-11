@@ -5,7 +5,7 @@ import java.util.Random;
 
 public abstract class Player
 {
-    protected class DeckItem
+    public class DeckItem
     {
         GameObject object;
         boolean isUsed;
@@ -23,10 +23,10 @@ public abstract class Player
     private String playerName;
     private long score;
 
-    private ArrayList<DeckItem> deck = new ArrayList<>();
+    public ArrayList<DeckItem> deck = new ArrayList<>();
     final Random rng = new Random();
 
-    protected Player()
+    public Player()
     {
         this.playerID = this.rng.nextLong();
         this.playerName = "Player";
@@ -34,7 +34,7 @@ public abstract class Player
         InitializeDeck();
     }
 
-    protected Player(long id, String name)
+    public Player(long id, String name)
     {
         this.playerID = id;
         this.playerName = name;
@@ -42,7 +42,7 @@ public abstract class Player
         InitializeDeck();
     }
 
-    protected Player(long id, String name, long startScore)
+    public Player(long id, String name, long startScore)
     {
         this.playerID = id;
         this.playerName = name;
@@ -50,37 +50,37 @@ public abstract class Player
         InitializeDeck();
     }
 
-    protected void SetPlayerID(long newID)
+    public void SetPlayerID(long newID)
     {
         this.playerID = newID;
     }
 
-    protected void SetPlayerName(String newName)
+    public void SetPlayerName(String newName)
     {
         this.playerName = newName;
     }
 
-    protected void SetPlayerScore(long newScore)
+    public void SetPlayerScore(long newScore)
     {
         this.score = newScore;
     }
 
-    protected long GetPlayerID()
+    public long GetPlayerID()
     {
         return this.playerID;
     }
 
-    protected String GetPlayerName()
+    public String GetPlayerName()
     {
         return this.playerName;
     }
 
-    protected long GetPlayerScore()
+    public long GetPlayerScore()
     {
         return this.score;
     }
 
-    protected void InitializeDeck()
+    public void InitializeDeck()
     {
         for(byte i = 0; i < 5; i++)
         {
@@ -93,31 +93,16 @@ public abstract class Player
         }
     }
 
-    protected ArrayList<DeckItem> GetItemDeck()
+    public ArrayList<DeckItem> GetItemDeck()
     {
         return this.deck;
     }
 
-    protected void RemoveItem(DeckItem disqualified)
-    {
-        this.deck.remove(disqualified);
-    }
+    public abstract void RemoveItem(DeckItem disqualified);
 
-    protected void UpgradeItem(DeckItem obsolete)
-    {
-        DeckItem toAdded;
+    public abstract void UpgradeItem(DeckItem obsolete);
 
-        switch(obsolete.object.GetType())
-        {
-            case Paper -> toAdded = new DeckItem(new SpecialPaper(obsolete.object.GetDurability(), obsolete.object.GetLevelPoint()), obsolete.id);
-            case Scissor -> toAdded = new DeckItem(new MasterScissor(obsolete.object.GetDurability(), obsolete.object.GetLevelPoint()), obsolete.id);
-            default -> toAdded = new DeckItem(new HeavyRock(obsolete.object.GetDurability(), obsolete.object.GetLevelPoint()), obsolete.id);
-        }
+    public abstract void ShowScore();
 
-        this.deck.set(this.deck.indexOf(obsolete), toAdded);
-    }
-
-    protected abstract void ShowScore();
-
-    protected abstract DeckItem SelectItem(int selection);
+    public abstract DeckItem SelectItem(int selection);
 }

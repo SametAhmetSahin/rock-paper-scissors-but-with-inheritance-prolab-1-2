@@ -4,10 +4,13 @@ import java.io.IOException;
 
 public class Game
 {
-    static GameObject player1, player2;
 
     public static void main(String[] args) throws IOException
     {
+        Player player1, player2;
+        player1 = new ComputerPlayer();
+
+
         int port = 8080;
 
         WebServer server = new WebServer();

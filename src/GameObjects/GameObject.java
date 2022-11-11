@@ -2,7 +2,7 @@ package GameObjects;
 
 public abstract class GameObject
 {
-    protected enum GameObjectType
+    public enum GameObjectType
     {
         Rock,
         Paper,
@@ -15,64 +15,64 @@ public abstract class GameObject
     private GameObjectType type;
     private double durability;
     private double levelPoint;
-    protected double a = 0.2;
+    public double a = 0.2;
 
-    protected GameObject()
+    public GameObject()
     {
         // Dökümanda belirtilen varsayılan değerler
         this.durability = 20.0;
         this.levelPoint = 0.0;
     }
 
-    protected GameObject(double startDurability, double startLevelPoint)
+    public GameObject(double startDurability, double startLevelPoint)
     {
         this.durability = startDurability;
         this.levelPoint = startLevelPoint;
     }
 
-    protected void SetDurability(double newDurability)
+    public void SetDurability(double newDurability)
     {
         this.durability = newDurability;
     }
 
-    protected void SetLevelPoint(double newLevelPoint)
+    public void SetLevelPoint(double newLevelPoint)
     {
         this.levelPoint = newLevelPoint;
     }
 
-    protected void SetType(GameObjectType newType)
+    public void SetType(GameObjectType newType)
     {
         this.type = newType;
     }
 
-    protected double GetDurability()
+    public double GetDurability()
     {
         return this.durability;
     }
 
-    protected double GetLevelPoint()
+    public double GetLevelPoint()
     {
         return this.levelPoint;
     }
 
-    protected GameObjectType GetType()
+    public GameObjectType GetType()
     {
         return this.type;
     }
 
-    protected abstract void ShowObjectStats();
+    public abstract void ShowObjectStats();
 
-    protected abstract double CalculateAttackValue(Rock enemyRock);
+    public abstract double CalculateAttackValue(Rock enemyRock);
 
-    protected abstract double CalculateAttackValue(Paper enemyPaper);
+    public abstract double CalculateAttackValue(Paper enemyPaper);
 
-    protected abstract double CalculateAttackValue(Scissor enemyScissor);
+    public abstract double CalculateAttackValue(Scissor enemyScissor);
 
-    protected abstract double CalculateAttackValue(HeavyRock enemyHeavyRock);
+    public abstract double CalculateAttackValue(HeavyRock enemyHeavyRock);
 
-    protected abstract double CalculateAttackValue(SpecialPaper enemySpecialPaper);
+    public abstract double CalculateAttackValue(SpecialPaper enemySpecialPaper);
 
-    protected abstract double CalculateAttackValue(MasterScissor enemyMasterScissor);
+    public abstract double CalculateAttackValue(MasterScissor enemyMasterScissor);
 
-    protected abstract int UpdateStats(long addToDurability, long addToLevelPoint);
+    public abstract int UpdateStats(long addToDurability, long addToLevelPoint);
 }

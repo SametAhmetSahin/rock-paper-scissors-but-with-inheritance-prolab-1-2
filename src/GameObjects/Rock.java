@@ -4,7 +4,7 @@ public class Rock extends GameObject
 {
     private double hardness;
 
-    protected Rock()
+    public Rock()
     {
         super.SetDurability(20);
         super.SetLevelPoint(0);
@@ -12,7 +12,7 @@ public class Rock extends GameObject
         this.hardness = 2.0;
     }
 
-    protected Rock(double startDurability, double startLevelPoint)
+    public Rock(double startDurability, double startLevelPoint)
     {
         super.SetDurability(startDurability);
         super.SetLevelPoint(startLevelPoint);
@@ -20,7 +20,7 @@ public class Rock extends GameObject
         this.hardness = 2.0;
     }
 
-    protected Rock(double startDurability, double startLevelPoint, double startHardness)
+    public Rock(double startDurability, double startLevelPoint, double startHardness)
     {
         super.SetDurability(startDurability);
         super.SetLevelPoint(startLevelPoint);
@@ -28,18 +28,18 @@ public class Rock extends GameObject
         this.hardness = startHardness;
     }
 
-    protected void SetHardness(double newHardness)
+    public void SetHardness(double newHardness)
     {
         this.hardness = newHardness;
     }
 
-    protected double GetHardness()
+    public double GetHardness()
     {
         return this.hardness;
     }
 
     @Override
-    protected void ShowObjectStats()
+    public void ShowObjectStats()
     {
         System.out.println();
         System.out.println("=================================================================");
@@ -51,7 +51,7 @@ public class Rock extends GameObject
     }
 
     @Override
-    protected double CalculateAttackValue(Rock enemyRock)
+    public double CalculateAttackValue(Rock enemyRock)
     {
         // Dökümanda aynı tip nesnelerin birbirlerine karşı etkilerinin hesaplanmasına dair bir formül yer almaması nedeniyle
         // dökümandaki formüller esas alınmak suretiyle en gerçekçi formül oluşturulmaya çalışılmıştır.
@@ -59,19 +59,19 @@ public class Rock extends GameObject
     }
 
     @Override
-    protected double CalculateAttackValue(Paper enemyPaper)
+    public double CalculateAttackValue(Paper enemyPaper)
     {
         return this.hardness / ((1.0 - a) * enemyPaper.GetInfluence());
     }
 
     @Override
-    protected double CalculateAttackValue(Scissor enemyScissor)
+    public double CalculateAttackValue(Scissor enemyScissor)
     {
         return this.hardness / (a * enemyScissor.GetSharpness());
     }
 
     @Override
-    protected double CalculateAttackValue(HeavyRock enemyHeavyRock)
+    public double CalculateAttackValue(HeavyRock enemyHeavyRock)
     {
         // Dökümanda aynı tip nesnelerin birbirlerine karşı etkilerinin hesaplanmasına dair bir formül yer almaması nedeniyle
         // dökümandaki formüller esas alınmak suretiyle en gerçekçi formül oluşturulmaya çalışılmıştır.
@@ -79,19 +79,19 @@ public class Rock extends GameObject
     }
 
     @Override
-    protected double CalculateAttackValue(SpecialPaper enemySpecialPaper)
+    public double CalculateAttackValue(SpecialPaper enemySpecialPaper)
     {
         return this.hardness / ((1.0 - a) * enemySpecialPaper.GetInfluence() * enemySpecialPaper.GetThickness());
     }
 
     @Override
-    protected double CalculateAttackValue(MasterScissor enemyMasterScissor)
+    public double CalculateAttackValue(MasterScissor enemyMasterScissor)
     {
         return this.hardness / (a * enemyMasterScissor.GetSharpness() * enemyMasterScissor.GetSpeed());
     }
 
     @Override
-    protected int UpdateStats(long addToDurability, long addToLevelPoint)
+    public int UpdateStats(long addToDurability, long addToLevelPoint)
     {
         this.SetDurability(this.GetDurability() + addToDurability);
         this.SetLevelPoint(this.GetLevelPoint() + addToLevelPoint);

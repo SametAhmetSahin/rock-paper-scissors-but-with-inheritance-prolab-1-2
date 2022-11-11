@@ -4,7 +4,7 @@ public class MasterScissor extends Scissor
 {
     private double speed;
 
-    protected MasterScissor()
+    public MasterScissor()
     {
         super.SetDurability(20.0);
         super.SetLevelPoint(0.0);
@@ -13,7 +13,7 @@ public class MasterScissor extends Scissor
         this.speed = 2.0;
     }
 
-    protected MasterScissor(double startDurability, double startLevelPoint)
+    public MasterScissor(double startDurability, double startLevelPoint)
     {
         super.SetDurability(startDurability);
         super.SetLevelPoint(startLevelPoint);
@@ -22,7 +22,7 @@ public class MasterScissor extends Scissor
         this.speed = 2.0;
     }
 
-    protected MasterScissor(double startDurability, double startLevelPoint, double startSharpness, double startSpeed)
+    public MasterScissor(double startDurability, double startLevelPoint, double startSharpness, double startSpeed)
     {
         super.SetDurability(startDurability);
         super.SetLevelPoint(startLevelPoint);
@@ -31,18 +31,18 @@ public class MasterScissor extends Scissor
         this.speed = startSpeed;
     }
 
-    protected void SetSpeed(double newSpeed)
+    public void SetSpeed(double newSpeed)
     {
         this.speed = newSpeed;
     }
 
-    protected double GetSpeed()
+    public double GetSpeed()
     {
         return this.speed;
     }
 
     @Override
-    protected void ShowObjectStats()
+    public void ShowObjectStats()
     {
         System.out.println();
         System.out.println("=================================================================");
@@ -55,19 +55,19 @@ public class MasterScissor extends Scissor
     }
 
     @Override
-    protected double CalculateAttackValue(Rock enemyRock)
+    public double CalculateAttackValue(Rock enemyRock)
     {
         return (super.GetSharpness() * this.speed) / ((1.0 - a) * enemyRock.GetHardness());
     }
 
     @Override
-    protected double CalculateAttackValue(Paper enemyPaper)
+    public double CalculateAttackValue(Paper enemyPaper)
     {
         return (super.GetSharpness() * this.speed) / (a * enemyPaper.GetInfluence());
     }
 
     @Override
-    protected double CalculateAttackValue(Scissor enemyScissor)
+    public double CalculateAttackValue(Scissor enemyScissor)
     {
         // Dökümanda aynı tip nesnelerin birbirlerine karşı etkilerinin hesaplanmasına dair bir formül yer almaması nedeniyle
         // dökümandaki formüller esas alınmak suretiyle en gerçekçi formül oluşturulmaya çalışılmıştır.
@@ -75,19 +75,19 @@ public class MasterScissor extends Scissor
     }
 
     @Override
-    protected double CalculateAttackValue(HeavyRock enemyHeavyRock)
+    public double CalculateAttackValue(HeavyRock enemyHeavyRock)
     {
         return (super.GetSharpness() * this.speed) / ((1.0 - a) * enemyHeavyRock.GetHardness() * enemyHeavyRock.GetHeat());
     }
 
     @Override
-    protected double CalculateAttackValue(SpecialPaper enemySpecialPaper)
+    public double CalculateAttackValue(SpecialPaper enemySpecialPaper)
     {
         return (super.GetSharpness() * this.speed) / (a * enemySpecialPaper.GetInfluence() * enemySpecialPaper.GetThickness());
     }
 
     @Override
-    protected double CalculateAttackValue(MasterScissor enemyMasterScissor)
+    public double CalculateAttackValue(MasterScissor enemyMasterScissor)
     {
         // Dökümanda aynı tip nesnelerin birbirlerine karşı etkilerinin hesaplanmasına dair bir formül yer almaması nedeniyle
         // dökümandaki formüller esas alınmak suretiyle en gerçekçi formül oluşturulmaya çalışılmıştır.
@@ -95,7 +95,7 @@ public class MasterScissor extends Scissor
     }
 
     @Override
-    protected int UpdateStats(long addToDurability, long addToLevelPoint)
+    public int UpdateStats(long addToDurability, long addToLevelPoint)
     {
         this.SetDurability(this.GetDurability() + addToDurability);
         this.SetLevelPoint(this.GetLevelPoint() + addToLevelPoint);
