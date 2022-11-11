@@ -117,18 +117,7 @@ public abstract class Player
         this.deck.set(this.deck.indexOf(obsolete), toAdded);
     }
 
-    protected void ShowScore()
-    {
-        System.out.println();
-        System.out.println("=================================================================");
-        System.out.println("Player ID: " + this.playerID);
-        System.out.println("Player's Name: " + this.playerName);
-        System.out.println("Player's Score = " + this.score);
-        System.out.println("=================================================================");
-    }
+    protected abstract void ShowScore();
 
-    protected DeckItem SelectItem(int selection)
-    {
-        return null;
-    }
+    protected abstract DeckItem SelectItem(int selection);
 }

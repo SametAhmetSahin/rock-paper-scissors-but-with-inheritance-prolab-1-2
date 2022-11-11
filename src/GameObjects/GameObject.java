@@ -60,48 +60,19 @@ public abstract class GameObject
         return this.type;
     }
 
-    protected void ShowObjectStats()
-    {
-        System.out.println();
-        System.out.println("=================================================================");
-        System.out.println("This object's durability = " + durability);
-        System.out.println("This object's level point = " + levelPoint);
-        System.out.println("=================================================================");
-    }
+    protected abstract void ShowObjectStats();
 
-    protected double CalculateAttackValue(Rock enemyRock)
-    {
-        return 2.0 + 2.0;
-    }
+    protected abstract double CalculateAttackValue(Rock enemyRock);
 
-    protected double CalculateAttackValue(Paper enemyPaper)
-    {
-        return 2.0 + 2.0;
-    }
+    protected abstract double CalculateAttackValue(Paper enemyPaper);
 
-    protected double CalculateAttackValue(Scissor enemyScissor)
-    {
-        return 2.0 + 2.0;
-    }
+    protected abstract double CalculateAttackValue(Scissor enemyScissor);
 
-    protected double CalculateAttackValue(HeavyRock enemyHeavyRock)
-    {
-        return 2.0 + 2.0;
-    }
+    protected abstract double CalculateAttackValue(HeavyRock enemyHeavyRock);
 
-    protected double CalculateAttackValue(SpecialPaper enemySpecialPaper)
-    {
-        return 2.0 + 2.0;
-    }
+    protected abstract double CalculateAttackValue(SpecialPaper enemySpecialPaper);
 
-    protected double CalculateAttackValue(MasterScissor enemyMasterScissor)
-    {
-        return 2.0 + 2.0;
-    }
+    protected abstract double CalculateAttackValue(MasterScissor enemyMasterScissor);
 
-    protected int UpdateStats(long addToDurability, long addToLevelPoint)
-    {
-        System.out.println("Something happened.");
-        return 0;
-    }
+    protected abstract int UpdateStats(long addToDurability, long addToLevelPoint);
 }
