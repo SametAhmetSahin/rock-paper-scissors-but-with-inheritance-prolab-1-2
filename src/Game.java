@@ -20,30 +20,68 @@ public class Game
 
         InitializeGame(false);
 
-        for(int i = 0; i < maxRound; i++)
+        int i;
+        for(i = 0; i < maxRound; i++)
         {
             PlayARound();
 
+            boolean resetIsUsedFlag = false;
+            for(Player.DeckItem item : player1.GetItemDeck())
+                resetIsUsedFlag |= item.isUsed;
+
+            if(resetIsUsedFlag)
+                for(Player.DeckItem item : player1.GetItemDeck())
+                    item.isUsed = false;
+
+            for(Player.DeckItem item : player2.GetItemDeck())
+                resetIsUsedFlag |= item.isUsed;
+
+            if(resetIsUsedFlag)
+                for(Player.DeckItem item : player2.GetItemDeck())
+                    item.isUsed = false;
+
             if(player1.GetItemDeck().size() == 0 && player2.GetItemDeck().size() != 0)
             {
-                System.out.println(player2.GetPlayerName() + " won! His score" + player2.GetPlayerScore());
+                System.out.println(player2.GetPlayerName() + " won! His stats");
+                player2.ShowScore();
                 break;
             }
-            if(player1.GetItemDeck().size() != 0 && player2.GetItemDeck().size() == 0)
+            else if(player1.GetItemDeck().size() != 0 && player2.GetItemDeck().size() == 0)
             {
-                System.out.println(player1.GetPlayerName() + " won! His score" + player1.GetPlayerScore());
+                System.out.println(player1.GetPlayerName() + " won! His stats");
+                player1.ShowScore();
                 break;
             }
-            if(player1.GetItemDeck().size() == 0 && player2.GetItemDeck().size() == 0)
+            else if(player1.GetItemDeck().size() == 0 && player2.GetItemDeck().size() == 0)
             {
-                System.out.println("Draw! Player's scores");
-                System.out.println(player1.GetPlayerName() + "'s score: " + player1.GetPlayerScore());
-                System.out.println(player2.GetPlayerName() + "'s score: " + player2.GetPlayerScore());
+                System.out.println("Draw! Player's stats");
+                player1.ShowScore();
+                player2.ShowScore();
                 break;
             }
         }
 
-        //System.exit(0);
+        if(i >= maxRound)
+        {
+            if(player1.GetPlayerScore() > player2.GetPlayerScore())
+            {
+                System.out.println(player1.GetPlayerName() + " won! Player's stats");
+                player1.ShowScore();
+                player2.ShowScore();
+            }
+            else if(player1.GetPlayerScore() < player2.GetPlayerScore())
+            {
+                System.out.println(player2.GetPlayerName() + " won! Player's stats");
+                player1.ShowScore();
+                player2.ShowScore();
+            }
+            else
+            {
+                System.out.println("Draw! Player's stats");
+                player1.ShowScore();
+                player2.ShowScore();
+            }
+        }
     }
 
     public static void InitializeGame(boolean isHuman)
@@ -149,9 +187,6 @@ public class Game
                 System.out.println(player1.GetPlayerName() + "'s item, " + deckItem1.object.GetType() + ", is upgraded!");
             }
         }
-
-        //deckItem1 = player1.SelectItem(humanSelection);
-        //deckItem2 = player2.SelectItem(humanSelection);
 
         System.out.println("\n" + player1.GetPlayerName() + "'s item's stats at end of this round");
         deckItem1.ShowStats();

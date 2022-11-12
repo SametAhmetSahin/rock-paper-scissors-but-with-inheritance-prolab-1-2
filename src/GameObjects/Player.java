@@ -31,7 +31,7 @@ public abstract class Player
 
     private long playerID;
     private String playerName;
-    private long score;
+    private double score;
 
     public ArrayList<DeckItem> deck = new ArrayList<>();
     final Random rng = new Random();
@@ -40,7 +40,7 @@ public abstract class Player
     {
         this.playerID = this.rng.nextLong();
         this.playerName = "Player";
-        this.score = 0;
+        this.score = 0.0;
         InitializeDeck();
     }
 
@@ -48,11 +48,11 @@ public abstract class Player
     {
         this.playerID = id;
         this.playerName = name;
-        this.score = 0;
+        this.score = 0.0;
         InitializeDeck();
     }
 
-    public Player(long id, String name, long startScore)
+    public Player(long id, String name, double startScore)
     {
         this.playerID = id;
         this.playerName = name;
@@ -70,7 +70,7 @@ public abstract class Player
         this.playerName = newName;
     }
 
-    public void SetPlayerScore(long newScore)
+    public void SetPlayerScore(double newScore)
     {
         this.score = newScore;
     }
@@ -85,9 +85,19 @@ public abstract class Player
         return this.playerName;
     }
 
-    public long GetPlayerScore()
+    public double GetPlayerScore()
     {
+        UpdatePlayerScore();
         return this.score;
+    }
+
+    public void UpdatePlayerScore()
+    {
+        double newScore = 0.0;
+        for(DeckItem i : this.GetItemDeck())
+            newScore += i.object.GetDurability();
+
+        this.SetPlayerScore(newScore);
     }
 
     public void InitializeDeck()

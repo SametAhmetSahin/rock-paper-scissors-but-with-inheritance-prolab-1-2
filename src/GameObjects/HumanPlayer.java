@@ -72,13 +72,8 @@ public class HumanPlayer extends Player
     @Override
     public void ShowScore()
     {
-        double score = 0;
-        for(DeckItem i : this.GetItemDeck())
-            score += i.object.GetDurability();
+        super.UpdatePlayerScore();
 
-        this.SetPlayerScore((long)(score + 0.5));
-
-        System.out.println();
         System.out.println("=================================================================");
         System.out.println("Player ID: " + super.GetPlayerID());
         System.out.println("Player's Name: " + super.GetPlayerName());
