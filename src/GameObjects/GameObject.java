@@ -15,7 +15,7 @@ public abstract class GameObject
     private GameObjectType type;
     private double durability;
     private double levelPoint;
-    public double a = 0.2;
+    private double a = 0.2;
 
     public GameObject()
     {
@@ -58,6 +58,16 @@ public abstract class GameObject
     public GameObjectType GetType()
     {
         return this.type;
+    }
+
+    public double GetConstantA()
+    {
+        return a;
+    }
+
+    public void SetConstantA(double newA)
+    {
+        a = newA;
     }
 
     public abstract void ShowObjectStats();

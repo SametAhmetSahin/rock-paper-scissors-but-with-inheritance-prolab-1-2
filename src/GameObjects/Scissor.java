@@ -53,13 +53,13 @@ public class Scissor extends GameObject
     @Override
     public double CalculateAttackValue(Rock enemyRock)
     {
-        return this.sharpness / ((1.0 - super.a) * enemyRock.GetHardness());
+        return this.sharpness / ((1.0 - super.GetConstantA()) * enemyRock.GetHardness());
     }
 
     @Override
     public double CalculateAttackValue(Paper enemyPaper)
     {
-        return this.sharpness / (a * enemyPaper.GetInfluence());
+        return this.sharpness / (super.GetConstantA() * enemyPaper.GetInfluence());
     }
 
     @Override
@@ -73,13 +73,13 @@ public class Scissor extends GameObject
     @Override
     public double CalculateAttackValue(HeavyRock enemyHeavyRock)
     {
-        return this.sharpness / ((1.0 - a) * enemyHeavyRock.GetHardness() * enemyHeavyRock.GetHeat());
+        return this.sharpness / ((1.0 - super.GetConstantA()) * enemyHeavyRock.GetHardness() * enemyHeavyRock.GetHeat());
     }
 
     @Override
     public double CalculateAttackValue(SpecialPaper enemySpecialPaper)
     {
-        return this.sharpness / (a * enemySpecialPaper.GetInfluence() * enemySpecialPaper.GetThickness());
+        return this.sharpness / (super.GetConstantA() * enemySpecialPaper.GetInfluence() * enemySpecialPaper.GetThickness());
     }
 
     @Override

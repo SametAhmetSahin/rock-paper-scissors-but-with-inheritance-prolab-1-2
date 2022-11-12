@@ -57,13 +57,13 @@ public class MasterScissor extends Scissor
     @Override
     public double CalculateAttackValue(Rock enemyRock)
     {
-        return (super.GetSharpness() * this.speed) / ((1.0 - a) * enemyRock.GetHardness());
+        return (super.GetSharpness() * this.speed) / ((1.0 - super.GetConstantA()) * enemyRock.GetHardness());
     }
 
     @Override
     public double CalculateAttackValue(Paper enemyPaper)
     {
-        return (super.GetSharpness() * this.speed) / (a * enemyPaper.GetInfluence());
+        return (super.GetSharpness() * this.speed) / (super.GetConstantA() * enemyPaper.GetInfluence());
     }
 
     @Override
@@ -77,13 +77,13 @@ public class MasterScissor extends Scissor
     @Override
     public double CalculateAttackValue(HeavyRock enemyHeavyRock)
     {
-        return (super.GetSharpness() * this.speed) / ((1.0 - a) * enemyHeavyRock.GetHardness() * enemyHeavyRock.GetHeat());
+        return (super.GetSharpness() * this.speed) / ((1.0 - super.GetConstantA()) * enemyHeavyRock.GetHardness() * enemyHeavyRock.GetHeat());
     }
 
     @Override
     public double CalculateAttackValue(SpecialPaper enemySpecialPaper)
     {
-        return (super.GetSharpness() * this.speed) / (a * enemySpecialPaper.GetInfluence() * enemySpecialPaper.GetThickness());
+        return (super.GetSharpness() * this.speed) / (super.GetConstantA() * enemySpecialPaper.GetInfluence() * enemySpecialPaper.GetThickness());
     }
 
     @Override

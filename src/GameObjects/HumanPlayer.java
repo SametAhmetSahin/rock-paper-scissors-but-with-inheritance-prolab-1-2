@@ -29,7 +29,17 @@ public class HumanPlayer extends Player
     @Override
     public void RemoveItem(DeckItem disqualified)
     {
-        super.deck.remove(disqualified);
+        int indexOfToBeRemoved = 0;
+        for(DeckItem i : this.GetItemDeck())
+        {
+            if(disqualified.id == i.id)
+            {
+                indexOfToBeRemoved = this.GetItemDeck().indexOf(i);
+                break;
+            }
+        }
+
+        super.deck.remove(indexOfToBeRemoved);
     }
 
     @Override
@@ -44,12 +54,28 @@ public class HumanPlayer extends Player
             default -> toAdded = new DeckItem(new HeavyRock(obsolete.object.GetDurability(), obsolete.object.GetLevelPoint()), obsolete.id);
         }
 
-        super.deck.set(super.deck.indexOf(obsolete), toAdded);
+        int indexOfToBeReplaced = 0;
+        for(DeckItem i : this.GetItemDeck())
+        {
+            if(obsolete.id == i.id)
+            {
+                indexOfToBeReplaced = this.GetItemDeck().indexOf(i);
+                break;
+            }
+        }
+
+        super.deck.set(indexOfToBeReplaced, toAdded);
     }
 
     @Override
     public void ShowScore()
     {
+        double score = 0;
+        for(DeckItem i : this.GetItemDeck())
+            score += i.object.GetDurability();
+
+        this.SetPlayerScore((long)(score + 0.5));
+
         System.out.println();
         System.out.println("=================================================================");
         System.out.println("Player ID: " + super.GetPlayerID());
@@ -61,6 +87,6 @@ public class HumanPlayer extends Player
     @Override
     public DeckItem SelectItem(int selection)
     {
-        return super.GetItemDeck().get(selection);
+        return (selection == -1) ? null : super.GetItemDeck().get(selection);
     }
 }
