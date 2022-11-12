@@ -44,14 +44,11 @@ public class SpecialPaper extends Paper
     @Override
     public void ShowObjectStats()
     {
-        System.out.println();
-        System.out.println("=================================================================");
-        System.out.println("Special Paper");
+        System.out.println("Type = Special Paper");
         System.out.println("Durability = " + super.GetDurability());
         System.out.println("Level point = " + super.GetLevelPoint());
         System.out.println("Influence = " + super.GetInfluence());
         System.out.println("Thickness = " + this.thickness);
-        System.out.println("=================================================================");
     }
 
     @Override
@@ -95,7 +92,7 @@ public class SpecialPaper extends Paper
     }
 
     @Override
-    public int UpdateStats(long addToDurability, long addToLevelPoint)
+    public int UpdateStats(double addToDurability, double addToLevelPoint)
     {
         this.SetDurability(this.GetDurability() + addToDurability);
         this.SetLevelPoint(this.GetLevelPoint() + addToLevelPoint);

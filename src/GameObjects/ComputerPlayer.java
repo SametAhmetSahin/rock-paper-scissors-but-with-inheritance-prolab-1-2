@@ -54,6 +54,8 @@ public class ComputerPlayer extends Player
             default -> toAdded = new DeckItem(new HeavyRock(obsolete.object.GetDurability(), obsolete.object.GetLevelPoint()), obsolete.id);
         }
 
+        toAdded.isUsed = obsolete.isUsed;
+
         int indexOfToBeReplaced = 0;
         for(DeckItem i : this.GetItemDeck())
         {

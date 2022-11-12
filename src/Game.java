@@ -6,17 +6,44 @@ import java.util.Random;
 public class Game
 {
     static Player player1, player2;
-    static Player.DeckItem deck1, deck2;
-    static long maxRound = 10;
+    static Player.DeckItem deckItem1, deckItem2;
+    static int maxRound = 10;
     static boolean isHumanGame;
     static Random rng = new Random();
 
-    public static void main(String[] args) throws IOException
+    public static void main(String[] args) //throws IOException
     {
         int port = 8080;
 
-        WebServer server = new WebServer();
-        server.Start(port);
+        //WebServer server = new WebServer();
+        //server.Start(port);
+
+        InitializeGame(false);
+
+        for(int i = 0; i < maxRound; i++)
+        {
+            PlayARound();
+
+            if(player1.GetItemDeck().size() == 0 && player2.GetItemDeck().size() != 0)
+            {
+                System.out.println(player2.GetPlayerName() + " won! His score" + player2.GetPlayerScore());
+                break;
+            }
+            if(player1.GetItemDeck().size() != 0 && player2.GetItemDeck().size() == 0)
+            {
+                System.out.println(player1.GetPlayerName() + " won! His score" + player1.GetPlayerScore());
+                break;
+            }
+            if(player1.GetItemDeck().size() == 0 && player2.GetItemDeck().size() == 0)
+            {
+                System.out.println("Draw! Player's scores");
+                System.out.println(player1.GetPlayerName() + "'s score: " + player1.GetPlayerScore());
+                System.out.println(player2.GetPlayerName() + "'s score: " + player2.GetPlayerScore());
+                break;
+            }
+        }
+
+        //System.exit(0);
     }
 
     public static void InitializeGame(boolean isHuman)
@@ -43,14 +70,99 @@ public class Game
 
     public static void PlayARound()
     {
+        System.out.println("======================== START OF ROUND =========================");
+
         int humanSelection = -1;
 
         if(isHumanGame)
             humanSelection = GetHumanSelection();
 
-        deck1 = player1.SelectItem(humanSelection);
-        deck2 = player2.SelectItem(humanSelection);
+        deckItem1 = player1.SelectItem(humanSelection);
+        deckItem2 = player2.SelectItem(humanSelection);
 
+        System.out.println(player1.GetPlayerName() + " chose " + deckItem1.object.GetType().toString());
+        System.out.println(player2.GetPlayerName() + " chose " + deckItem2.object.GetType().toString());
 
+        System.out.println("\n" + player1.GetPlayerName() + "'s item's stats at start of this round");
+        deckItem1.ShowStats();
+        System.out.println("\n" + player2.GetPlayerName() + "'s item's stats at start of this round");
+        deckItem2.ShowStats();
+
+        double attackValueForItem1, attackValueForItem2;
+
+        switch (deckItem2.object.GetType())
+        {
+            default -> attackValueForItem1 = 0.0;
+            case Rock -> attackValueForItem1 = deckItem1.object.CalculateAttackValue((Rock) deckItem2.object);
+            case Paper -> attackValueForItem1 = deckItem1.object.CalculateAttackValue((Paper) deckItem2.object);
+            case Scissor -> attackValueForItem1 = deckItem1.object.CalculateAttackValue((Scissor) deckItem2.object);
+            case HeavyRock -> attackValueForItem1 = deckItem1.object.CalculateAttackValue((HeavyRock) deckItem2.object);
+            case SpecialPaper -> attackValueForItem1 = deckItem1.object.CalculateAttackValue((SpecialPaper) deckItem2.object);
+            case MasterScissor -> attackValueForItem1 = deckItem1.object.CalculateAttackValue((MasterScissor) deckItem2.object);
+        }
+
+        switch (deckItem1.object.GetType())
+        {
+            default -> attackValueForItem2 = 0.0;
+            case Rock -> attackValueForItem2 = deckItem2.object.CalculateAttackValue((Rock) deckItem1.object);
+            case Paper -> attackValueForItem2 = deckItem2.object.CalculateAttackValue((Paper) deckItem1.object);
+            case Scissor -> attackValueForItem2 = deckItem2.object.CalculateAttackValue((Scissor) deckItem1.object);
+            case HeavyRock -> attackValueForItem2 = deckItem2.object.CalculateAttackValue((HeavyRock) deckItem1.object);
+            case SpecialPaper -> attackValueForItem2 = deckItem2.object.CalculateAttackValue((SpecialPaper) deckItem1.object);
+            case MasterScissor -> attackValueForItem2 = deckItem2.object.CalculateAttackValue((MasterScissor) deckItem1.object);
+        }
+
+        System.out.println("\nCalculated attack value for " + player1.GetPlayerName() + "'s item: " + attackValueForItem1);
+        System.out.println("\nCalculated attack value for " + player2.GetPlayerName() + "'s item: " + attackValueForItem2);
+
+        int statusOfItem1 = deckItem1.object.UpdateStats(-attackValueForItem2, 0);
+        int statusOfItem2 = deckItem2.object.UpdateStats(-attackValueForItem1, 0);
+
+        System.out.println("\n" + player1.GetPlayerName() + "'s item's stats after applying damage");
+        deckItem1.ShowStats();
+        System.out.println("\n" + player2.GetPlayerName() + "'s item's stats after applying damage");
+        deckItem2.ShowStats();
+
+        deckItem1.isUsed = true;
+        deckItem2.isUsed = true;
+
+        if(statusOfItem1 == -1)
+        {
+            player1.RemoveItem(deckItem1);
+            System.out.println(player1.GetPlayerName() + "'s item, " + deckItem1.object.GetType() + ", eliminated from the game!");
+
+            if(deckItem2.object.UpdateStats(0, 20) == 1 && statusOfItem2 != -1)
+            {
+                player2.UpgradeItem(deckItem2);
+                System.out.println(player2.GetPlayerName() + "'s item, " + deckItem2.object.GetType() + ", is upgraded!");
+            }
+        }
+
+        if(statusOfItem2 == -1)
+        {
+            player2.RemoveItem(deckItem2);
+            System.out.println(player2.GetPlayerName() + "'s item, " + deckItem2.object.GetType() + ", eliminated from the game!");
+
+            if(deckItem1.object.UpdateStats(0, 20) == 1 && statusOfItem1 != -1)
+            {
+                player1.UpgradeItem(deckItem1);
+                System.out.println(player1.GetPlayerName() + "'s item, " + deckItem1.object.GetType() + ", is upgraded!");
+            }
+        }
+
+        //deckItem1 = player1.SelectItem(humanSelection);
+        //deckItem2 = player2.SelectItem(humanSelection);
+
+        System.out.println("\n" + player1.GetPlayerName() + "'s item's stats at end of this round");
+        deckItem1.ShowStats();
+        System.out.println("\n" + player2.GetPlayerName() + "'s item's stats at end of this round");
+        deckItem2.ShowStats();
+
+        System.out.println("========================= END OF ROUND ==========================\n\n");
+    }
+
+    public static int GetHumanSelection()
+    {
+        return 0;
     }
 }

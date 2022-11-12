@@ -44,14 +44,11 @@ public class MasterScissor extends Scissor
     @Override
     public void ShowObjectStats()
     {
-        System.out.println();
-        System.out.println("=================================================================");
-        System.out.println("Master Scissor");
+        System.out.println("Type = Master Scissor");
         System.out.println("Durability = " + super.GetDurability());
         System.out.println("Level point = " + super.GetLevelPoint());
-        System.out.println("Influence = " + super.GetSharpness());
+        System.out.println("Sharpness = " + super.GetSharpness());
         System.out.println("Speed = " + this.speed);
-        System.out.println("=================================================================");
     }
 
     @Override
@@ -95,7 +92,7 @@ public class MasterScissor extends Scissor
     }
 
     @Override
-    public int UpdateStats(long addToDurability, long addToLevelPoint)
+    public int UpdateStats(double addToDurability, double addToLevelPoint)
     {
         this.SetDurability(this.GetDurability() + addToDurability);
         this.SetLevelPoint(this.GetLevelPoint() + addToLevelPoint);

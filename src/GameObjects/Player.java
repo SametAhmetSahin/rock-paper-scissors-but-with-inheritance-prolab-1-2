@@ -7,8 +7,8 @@ public abstract class Player
 {
     public class DeckItem
     {
-        GameObject object;
-        boolean isUsed;
+        public GameObject object;
+        public boolean isUsed;
         long id;
 
         DeckItem(GameObject startItem, long startID)
@@ -16,6 +16,16 @@ public abstract class Player
             this.object = startItem;
             this.isUsed = false;
             this.id = startID;
+        }
+
+        public void ShowStats()
+        {
+            System.out.println("-----------------------------------------------------------------");
+            System.out.println("Item's ID: " + this.id);
+            System.out.println("Is item used: " + this.isUsed);
+            System.out.println("-----------------------------------------------------------------");
+            this.object.ShowObjectStats();
+            System.out.println("-----------------------------------------------------------------");
         }
     }
 
@@ -82,7 +92,7 @@ public abstract class Player
 
     public void InitializeDeck()
     {
-        for(byte i = 0; i < 5; i++)
+        for(long i = 0; i < 5; i++)
         {
             switch (this.rng.nextInt(3))
             {

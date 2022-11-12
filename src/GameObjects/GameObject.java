@@ -84,5 +84,5 @@ public abstract class GameObject
 
     public abstract double CalculateAttackValue(MasterScissor enemyMasterScissor);
 
-    public abstract int UpdateStats(long addToDurability, long addToLevelPoint);
+    public abstract int UpdateStats(double addToDurability, double addToLevelPoint);
 }
