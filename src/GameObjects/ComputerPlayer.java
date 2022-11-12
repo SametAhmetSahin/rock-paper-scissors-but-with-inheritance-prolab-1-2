@@ -86,7 +86,7 @@ public class ComputerPlayer extends Player
     {
         do
         {
-            selection = super.rng.nextInt(5);
+            selection = super.rng.nextInt(super.GetItemDeck().size());
         } while(super.GetItemDeck().get(selection).isUsed);
 
         return super.GetItemDeck().get(selection);

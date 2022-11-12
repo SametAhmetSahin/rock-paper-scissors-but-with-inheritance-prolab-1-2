@@ -40,16 +40,18 @@ public class Game
                 for(Player.DeckItem item : player2.GetItemDeck())
                     item.isUsed = false;
 
-            if(player1.GetItemDeck().size() == 0 && player2.GetItemDeck().size() != 0)
+            if(player1.GetItemDeck().size() == 0 && player2.GetItemDeck().size() > 0)
             {
-                System.out.println(player2.GetPlayerName() + " won! His stats");
+                System.out.println(player2.GetPlayerName() + " won! Player's stats");
+                player1.ShowScore();
                 player2.ShowScore();
                 break;
             }
-            else if(player1.GetItemDeck().size() != 0 && player2.GetItemDeck().size() == 0)
+            else if(player1.GetItemDeck().size() > 0 && player2.GetItemDeck().size() == 0)
             {
-                System.out.println(player1.GetPlayerName() + " won! His stats");
+                System.out.println(player1.GetPlayerName() + " won! Player's stats");
                 player1.ShowScore();
+                player2.ShowScore();
                 break;
             }
             else if(player1.GetItemDeck().size() == 0 && player2.GetItemDeck().size() == 0)
