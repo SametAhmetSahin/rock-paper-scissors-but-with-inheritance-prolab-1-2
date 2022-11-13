@@ -14,9 +14,10 @@ public class Game
     public static Player player1, player2;
     public static Player.DeckItem deckItem1, deckItem2;
     public static int maxRound = 10;
-    public static boolean isHumanGame;
+    public static boolean isHumanGame = false;
     static Random rng = new Random();
     static String logText = "";
+    static File logFile = null;
 
     public static int selectionOfHuman = 0;
     public static double startDurability = 20.0, startLevelPoint = 0.0,
@@ -24,28 +25,20 @@ public class Game
                   startPaperInfluence = 2.0, startSpecialPaperThickness = 2.0,
                   startScissorSharpness = 2.0, startMasterScissorSpeed = 2.0;
 
-    public static void main(String[] args) //throws IOException
+    public static void main(String[] args) throws IOException
     {
         int port = 8080;
 
         //WebServer server = new WebServer();
         //server.Start(port);
 
-        InitializeGame(false);
+        InitializeGame(isHumanGame);
+        InitializeLogFile();
+        HandleGameplay();
+    }
 
-        File logFile = null;
-
-        try
-        {
-            logFile = new File("RockPaperScissor " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH.mm.ss")) + ".log");
-            logFile.createNewFile();
-        }
-        catch (Exception e)
-        {
-            System.out.println("Shit happened.");
-            e.printStackTrace();
-        }
-
+    public static void HandleGameplay()
+    {
         int i;
         for(i = 0; i < maxRound; i++)
         {
@@ -159,6 +152,20 @@ public class Game
             fw.close();
         }
         catch(Exception e)
+        {
+            System.out.println("Shit happened.");
+            e.printStackTrace();
+        }
+    }
+
+    public static void InitializeLogFile()
+    {
+        try
+        {
+            logFile = new File("RockPaperScissor " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH.mm.ss")) + ".log");
+            logFile.createNewFile();
+        }
+        catch (Exception e)
         {
             System.out.println("Shit happened.");
             e.printStackTrace();
