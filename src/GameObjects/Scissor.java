@@ -39,12 +39,17 @@ public class Scissor extends GameObject
     }
 
     @Override
-    public void ShowObjectStats()
+    public String ShowObjectStats()
     {
-        System.out.println("Type = Scissor");
-        System.out.println("Durability = " + super.GetDurability());
-        System.out.println("Level point = " + super.GetLevelPoint());
-        System.out.println("Sharpness = " + this.sharpness);
+        System.out.println("Type: SCISSOR");
+        System.out.println("Durability: " + super.GetDurability());
+        System.out.println("Level point: " + super.GetLevelPoint());
+        System.out.println("Sharpness: " + this.sharpness);
+
+        return "Type: SCISSOR\n" +
+               "Durability: " + super.GetDurability() + "\n" +
+               "Level point: " + super.GetLevelPoint() + "\n" +
+               "Sharpness: " + this.sharpness + "\n";
     }
 
     @Override
@@ -93,10 +98,10 @@ public class Scissor extends GameObject
         this.SetDurability(this.GetDurability() + addToDurability);
         this.SetLevelPoint(this.GetLevelPoint() + addToLevelPoint);
 
-        if(this.GetDurability() <= 0)
+        if(this.GetDurability() <= 0.0)
             return -1;
 
-        if(this.GetLevelPoint() > 30)
+        if(this.GetLevelPoint() > 30.0)
             return 1;
 
         return 0;

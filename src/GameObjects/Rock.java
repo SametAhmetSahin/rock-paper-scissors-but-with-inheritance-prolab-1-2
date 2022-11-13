@@ -39,12 +39,17 @@ public class Rock extends GameObject
     }
 
     @Override
-    public void ShowObjectStats()
+    public String ShowObjectStats()
     {
-        System.out.println("Type = Rock");
-        System.out.println("Durability = " + super.GetDurability());
-        System.out.println("Level point = " + super.GetLevelPoint());
-        System.out.println("Hardness = " + this.hardness);
+        System.out.println("Type: ROCK");
+        System.out.println("Durability: " + super.GetDurability());
+        System.out.println("Level point: " + super.GetLevelPoint());
+        System.out.println("Hardness: " + this.hardness);
+
+        return "Type: ROCK\n" +
+               "Durability: " + super.GetDurability() + "\n" +
+               "Level point: " + super.GetLevelPoint() + "\n" +
+               "Hardness: " + this.hardness + "\n";
     }
 
     @Override
@@ -93,10 +98,10 @@ public class Rock extends GameObject
         this.SetDurability(this.GetDurability() + addToDurability);
         this.SetLevelPoint(this.GetLevelPoint() + addToLevelPoint);
 
-        if(this.GetDurability() <= 0)
+        if(this.GetDurability() <= 0.0)
             return -1;
 
-        if(this.GetLevelPoint() > 30)
+        if(this.GetLevelPoint() > 30.0)
             return 1;
 
         return 0;

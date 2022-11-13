@@ -1,10 +1,16 @@
 package GameObjects;
 
+import Game.Game;
+
 public class ComputerPlayer extends Player
 {
     public ComputerPlayer()
     {
-        super.SetPlayerID(this.rng.nextLong());
+        do
+        {
+            super.SetPlayerID(this.rng.nextLong());
+        } while(super.GetPlayerID() < 0);
+
         super.SetPlayerName("Computer");
         super.SetPlayerScore(0);
         super.InitializeDeck();
@@ -28,18 +34,16 @@ public class ComputerPlayer extends Player
 
     @Override
     public void RemoveItem(DeckItem disqualified)
-    {
-        int indexOfToBeRemoved = 0;
-        for(DeckItem i : this.GetItemDeck())
+    {/*
+        for(DeckItem i : super.deck)
         {
             if(disqualified.id == i.id)
             {
-                indexOfToBeRemoved = this.GetItemDeck().indexOf(i);
+                super.deck.remove(i);
                 break;
             }
-        }
-
-        super.deck.remove(indexOfToBeRemoved);
+        }*/
+        super.deck.remove(disqualified);
     }
 
     @Override
@@ -49,36 +53,50 @@ public class ComputerPlayer extends Player
 
         switch(obsolete.object.GetType())
         {
-            case Paper -> toAdded = new DeckItem(new SpecialPaper(obsolete.object.GetDurability(), obsolete.object.GetLevelPoint()), obsolete.id);
-            case Scissor -> toAdded = new DeckItem(new MasterScissor(obsolete.object.GetDurability(), obsolete.object.GetLevelPoint()), obsolete.id);
-            default -> toAdded = new DeckItem(new HeavyRock(obsolete.object.GetDurability(), obsolete.object.GetLevelPoint()), obsolete.id);
+            case Paper -> toAdded = new DeckItem(new SpecialPaper(obsolete.object.GetDurability(),
+                                                                  obsolete.object.GetLevelPoint(),
+                                                                  Game.startPaperInfluence,
+                                                                  Game.startSpecialPaperThickness), obsolete.id);
+
+            case Scissor -> toAdded = new DeckItem(new MasterScissor(obsolete.object.GetDurability(),
+                                                                     obsolete.object.GetLevelPoint(),
+                                                                     Game.startScissorSharpness,
+                                                                     Game.startMasterScissorSpeed), obsolete.id);
+
+            default -> toAdded = new DeckItem(new HeavyRock(obsolete.object.GetDurability(),
+                                                            obsolete.object.GetLevelPoint(),
+                                                            Game.startRockHardness,
+                                                            Game.startHeavyRockHeat), obsolete.id);
         }
 
         toAdded.isUsed = obsolete.isUsed;
 
-        int indexOfToBeReplaced = 0;
-        for(DeckItem i : this.GetItemDeck())
+        for(DeckItem i : super.deck)
         {
             if(obsolete.id == i.id)
             {
-                indexOfToBeReplaced = this.GetItemDeck().indexOf(i);
+                super.deck.set(super.deck.indexOf(i), toAdded);
                 break;
             }
         }
-
-        super.deck.set(indexOfToBeReplaced, toAdded);
     }
 
     @Override
-    public void ShowScore()
+    public String ShowScore()
     {
         super.UpdatePlayerScore();
 
         System.out.println("=================================================================");
         System.out.println("Player ID: " + super.GetPlayerID());
         System.out.println("Player's Name: " + super.GetPlayerName());
-        System.out.println("Player's Score = " + super.GetPlayerScore());
+        System.out.println("Player's Score: " + super.GetPlayerScore());
         System.out.println("=================================================================");
+
+        return "=================================================================\n" +
+               "Player ID: " + super.GetPlayerID() + "\n" +
+               "Player's Name: " + super.GetPlayerName() + "\n" +
+               "Player's Score: " + super.GetPlayerScore() + "\n" +
+               "=================================================================\n";
     }
 
     @Override

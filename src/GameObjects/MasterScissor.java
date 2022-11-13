@@ -42,13 +42,19 @@ public class MasterScissor extends Scissor
     }
 
     @Override
-    public void ShowObjectStats()
+    public String ShowObjectStats()
     {
-        System.out.println("Type = Master Scissor");
-        System.out.println("Durability = " + super.GetDurability());
-        System.out.println("Level point = " + super.GetLevelPoint());
-        System.out.println("Sharpness = " + super.GetSharpness());
-        System.out.println("Speed = " + this.speed);
+        System.out.println("Type: MASTER SCISSOR");
+        System.out.println("Durability: " + super.GetDurability());
+        System.out.println("Level point: " + super.GetLevelPoint());
+        System.out.println("Sharpness: " + super.GetSharpness());
+        System.out.println("Speed: " + this.speed);
+
+        return "Type: MASTER SCISSOR\n" +
+               "Durability: " + super.GetDurability() + "\n" +
+               "Level point: " + super.GetLevelPoint() + "\n" +
+               "Sharpness: " + super.GetSharpness() + "\n" +
+               "Speed: " + this.speed + "\n";
     }
 
     @Override
@@ -97,10 +103,10 @@ public class MasterScissor extends Scissor
         this.SetDurability(this.GetDurability() + addToDurability);
         this.SetLevelPoint(this.GetLevelPoint() + addToLevelPoint);
 
-        if(this.GetDurability() <= 0)
+        if(this.GetDurability() <= 0.0)
             return -1;
 
-        if(this.GetLevelPoint() > 30)
+        if(this.GetLevelPoint() > 30.0)
             return 1;
 
         return 0;

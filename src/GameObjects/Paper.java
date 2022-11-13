@@ -39,12 +39,17 @@ public class Paper extends GameObject
     }
 
     @Override
-    public void ShowObjectStats()
+    public String ShowObjectStats()
     {
-        System.out.println("Type = Paper");
-        System.out.println("Durability = " + super.GetDurability());
-        System.out.println("Level point = " + super.GetLevelPoint());
-        System.out.println("Influence = " + this.influence);
+        System.out.println("Type: PAPER");
+        System.out.println("Durability: " + super.GetDurability());
+        System.out.println("Level point: " + super.GetLevelPoint());
+        System.out.println("Influence: " + this.influence);
+
+        return "Type: PAPER\n" +
+               "Durability: " + super.GetDurability() + "\n" +
+               "Level point: " + super.GetLevelPoint() + "\n" +
+               "Influence: " + this.influence + "\n";
     }
 
     @Override
@@ -93,10 +98,10 @@ public class Paper extends GameObject
         this.SetDurability(this.GetDurability() + addToDurability);
         this.SetLevelPoint(this.GetLevelPoint() + addToLevelPoint);
 
-        if(this.GetDurability() <= 0)
+        if(this.GetDurability() <= 0.0)
             return -1;
 
-        if(this.GetLevelPoint() > 30)
+        if(this.GetLevelPoint() > 30.0)
             return 1;
 
         return 0;

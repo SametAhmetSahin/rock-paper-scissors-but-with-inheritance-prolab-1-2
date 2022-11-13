@@ -2,6 +2,7 @@ package GameObjects;
 
 import java.util.ArrayList;
 import java.util.Random;
+import Game.*;
 
 public abstract class Player
 {
@@ -18,14 +19,23 @@ public abstract class Player
             this.id = startID;
         }
 
-        public void ShowStats()
+        public String ShowStats()
         {
+            String text = "";
+
             System.out.println("-----------------------------------------------------------------");
             System.out.println("Item's ID: " + this.id);
             System.out.println("Is item used: " + this.isUsed);
+
+            text += "-----------------------------------------------------------------\n";
+            text += "Item's ID: " + this.id + "\n";
+            text += "Is item used: " + this.isUsed + "\n";
+            text += this.object.ShowObjectStats();
+
             System.out.println("-----------------------------------------------------------------");
-            this.object.ShowObjectStats();
-            System.out.println("-----------------------------------------------------------------");
+            text += "-----------------------------------------------------------------\n";
+
+            return text;
         }
     }
 
@@ -38,10 +48,14 @@ public abstract class Player
 
     public Player()
     {
-        this.playerID = this.rng.nextLong();
+        do
+        {
+            this.playerID = this.rng.nextLong();
+        } while(this.playerID < 0);
+
         this.playerName = "Player";
         this.score = 0.0;
-        InitializeDeck();
+        //InitializeDeck();
     }
 
     public Player(long id, String name)
@@ -49,7 +63,7 @@ public abstract class Player
         this.playerID = id;
         this.playerName = name;
         this.score = 0.0;
-        InitializeDeck();
+        //InitializeDeck();
     }
 
     public Player(long id, String name, double startScore)
@@ -57,7 +71,7 @@ public abstract class Player
         this.playerID = id;
         this.playerName = name;
         this.score = startScore;
-        InitializeDeck();
+        //InitializeDeck();
     }
 
     public void SetPlayerID(long newID)
@@ -106,9 +120,9 @@ public abstract class Player
         {
             switch (this.rng.nextInt(3))
             {
-                case 0 -> this.deck.add(new DeckItem(new Rock(), i));
-                case 1 -> this.deck.add(new DeckItem(new Paper(), i));
-                case 2 -> this.deck.add(new DeckItem(new Scissor(), i));
+                case 0 -> this.deck.add(new DeckItem(new Rock(Game.startDurability, Game.startLevelPoint, Game.startRockHardness), i));
+                case 1 -> this.deck.add(new DeckItem(new Paper(Game.startDurability, Game.startLevelPoint, Game.startPaperInfluence), i));
+                case 2 -> this.deck.add(new DeckItem(new Scissor(Game.startDurability, Game.startLevelPoint, Game.startScissorSharpness), i));
             }
         }
     }
@@ -122,7 +136,7 @@ public abstract class Player
 
     public abstract void UpgradeItem(DeckItem obsolete);
 
-    public abstract void ShowScore();
+    public abstract String ShowScore();
 
     public abstract DeckItem SelectItem(int selection);
 }

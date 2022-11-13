@@ -70,7 +70,7 @@ public abstract class GameObject
         a = newA;
     }
 
-    public abstract void ShowObjectStats();
+    public abstract String ShowObjectStats();
 
     public abstract double CalculateAttackValue(Rock enemyRock);
 

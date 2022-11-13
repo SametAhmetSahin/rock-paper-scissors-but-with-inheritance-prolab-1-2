@@ -42,13 +42,19 @@ public class SpecialPaper extends Paper
     }
 
     @Override
-    public void ShowObjectStats()
+    public String ShowObjectStats()
     {
-        System.out.println("Type = Special Paper");
-        System.out.println("Durability = " + super.GetDurability());
-        System.out.println("Level point = " + super.GetLevelPoint());
-        System.out.println("Influence = " + super.GetInfluence());
-        System.out.println("Thickness = " + this.thickness);
+        System.out.println("Type: SPECIAL PAPER");
+        System.out.println("Durability: " + super.GetDurability());
+        System.out.println("Level point: " + super.GetLevelPoint());
+        System.out.println("Influence: " + super.GetInfluence());
+        System.out.println("Thickness: " + this.thickness);
+
+        return "Type: SPECIAL PAPER\n" +
+               "Durability: " + super.GetDurability() + "\n" +
+               "Level point: " + super.GetLevelPoint() + "\n" +
+               "Influence: " + super.GetInfluence() + "\n" +
+               "Thickness: " + this.thickness + "\n";
     }
 
     @Override
@@ -97,10 +103,10 @@ public class SpecialPaper extends Paper
         this.SetDurability(this.GetDurability() + addToDurability);
         this.SetLevelPoint(this.GetLevelPoint() + addToLevelPoint);
 
-        if(this.GetDurability() <= 0)
+        if(this.GetDurability() <= 0.0)
             return -1;
 
-        if(this.GetLevelPoint() > 30)
+        if(this.GetLevelPoint() > 30.0)
             return 1;
 
         return 0;

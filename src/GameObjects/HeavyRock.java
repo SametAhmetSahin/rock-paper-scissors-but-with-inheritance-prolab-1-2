@@ -42,13 +42,19 @@ public class HeavyRock extends Rock
     }
 
     @Override
-    public void ShowObjectStats()
+    public String ShowObjectStats()
     {
-        System.out.println("Type = Heavy Rock");
-        System.out.println("Durability = " + super.GetDurability());
-        System.out.println("Level point = " + super.GetLevelPoint());
-        System.out.println("Hardness = " + super.GetHardness());
-        System.out.println("Heat = " + this.heat);
+        System.out.println("Type: HEAVY ROCK");
+        System.out.println("Durability: " + super.GetDurability());
+        System.out.println("Level point: " + super.GetLevelPoint());
+        System.out.println("Hardness: " + super.GetHardness());
+        System.out.println("Heat: " + this.heat);
+
+        return "Type: HEAVY ROCK\n" +
+               "Durability: " + super.GetDurability() + "\n" +
+               "Level point: " + super.GetLevelPoint() + "\n" +
+               "Hardness: " + super.GetHardness() + "\n" +
+               "Heat: " + this.heat + "\n";
     }
 
     @Override
@@ -97,10 +103,10 @@ public class HeavyRock extends Rock
         this.SetDurability(this.GetDurability() + addToDurability);
         this.SetLevelPoint(this.GetLevelPoint() + addToLevelPoint);
 
-        if(this.GetDurability() <= 0)
+        if(this.GetDurability() <= 0.0)
             return -1;
 
-        if(this.GetLevelPoint() > 30)
+        if(this.GetLevelPoint() > 30.0)
             return 1;
 
         return 0;
