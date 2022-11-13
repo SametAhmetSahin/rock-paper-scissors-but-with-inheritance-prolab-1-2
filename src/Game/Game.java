@@ -18,6 +18,7 @@ public class Game
     static Random rng = new Random();
     static String logText = "";
 
+    public static int selectionOfHuman = 0;
     public static double startDurability = 20.0, startLevelPoint = 0.0,
                   startRockHardness = 2.0, startHeavyRockHeat = 2.0,
                   startPaperInfluence = 2.0, startSpecialPaperThickness = 2.0,
@@ -48,7 +49,7 @@ public class Game
         int i;
         for(i = 0; i < maxRound; i++)
         {
-            PlayARound();
+            PlayARound(selectionOfHuman);
 
             boolean resetIsUsedFlag = true;
             for(Player.DeckItem item : player1.GetItemDeck())
@@ -58,8 +59,6 @@ public class Game
             {
                 for(Player.DeckItem item : player1.GetItemDeck())
                     item.isUsed = false;
-
-                //resetIsUsedFlag = true;
 
                 System.out.println(player1.GetPlayerName() + " used all of his items!\n\n");
                 logText += player1.GetPlayerName() + " used all of his items!\n\n\n";
@@ -212,7 +211,7 @@ public class Game
         player2 = new ComputerPlayer(startID, "Bilgisayar 2");
     }
 
-    public static void PlayARound()
+    public static void PlayARound(int humanSelection)
     {
         System.out.println("======================== START OF ROUND =========================");
         logText += "======================== START OF ROUND =========================\n";
@@ -221,11 +220,6 @@ public class Game
         System.out.println(player2.GetPlayerName() + " has " + player2.GetItemDeck().size() + " item(s) in his deck.");
         logText += player1.GetPlayerName() + " has " + player1.GetItemDeck().size() + " item(s) in his deck.\n";
         logText += player2.GetPlayerName() + " has " + player2.GetItemDeck().size() + " item(s) in his deck.\n";
-
-        int humanSelection = -1;
-
-        if(isHumanGame)
-            humanSelection = GetHumanSelection();
 
         deckItem1 = player1.SelectItem(humanSelection);
         deckItem2 = player2.SelectItem(humanSelection);
@@ -324,10 +318,5 @@ public class Game
 
         System.out.println("========================= END OF ROUND ==========================\n\n");
         logText += "========================= END OF ROUND ==========================\n\n\n";
-    }
-
-    public static int GetHumanSelection()
-    {
-        return 0;
     }
 }
