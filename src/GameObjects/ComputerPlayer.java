@@ -82,6 +82,19 @@ public class ComputerPlayer extends Player
     }
 
     @Override
+    public void UpdateItem(DeckItem upToDate)
+    {
+        for(DeckItem i : super.deck)
+        {
+            if(upToDate.id == i.id)
+            {
+                super.deck.set(super.deck.indexOf(i), upToDate);
+                break;
+            }
+        }
+    }
+
+    @Override
     public String ShowScore()
     {
         super.UpdatePlayerScore();

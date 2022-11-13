@@ -136,6 +136,8 @@ public abstract class Player
 
     public abstract void UpgradeItem(DeckItem obsolete);
 
+    public abstract void UpdateItem(DeckItem upToDate);
+
     public abstract String ShowScore();
 
     public abstract DeckItem SelectItem(int selection);

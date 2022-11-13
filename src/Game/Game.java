@@ -224,9 +224,9 @@ public class Game
         logText += "======================== START OF ROUND =========================\n";
 
         System.out.println(player1.GetPlayerName() + " has " + player1.GetItemDeck().size() + " item(s) in his deck.");
-        System.out.println(player2.GetPlayerName() + " has " + player2.GetItemDeck().size() + " item(s) in his deck.");
+        System.out.println(player2.GetPlayerName() + " has " + player2.GetItemDeck().size() + " item(s) in his deck.\n");
         logText += player1.GetPlayerName() + " has " + player1.GetItemDeck().size() + " item(s) in his deck.\n";
-        logText += player2.GetPlayerName() + " has " + player2.GetItemDeck().size() + " item(s) in his deck.\n";
+        logText += player2.GetPlayerName() + " has " + player2.GetItemDeck().size() + " item(s) in his deck.\n\n";
 
         deckItem1 = player1.SelectItem(humanSelection);
         deckItem2 = player2.SelectItem(humanSelection);
@@ -314,6 +314,9 @@ public class Game
                 logText += player1.GetPlayerName() + "'s item, " + deckItem1.object.GetType() + ", is upgraded!\n";
             }
         }
+
+        player1.UpdateItem(deckItem1);
+        player2.UpdateItem(deckItem2);
 
         System.out.println("\n" + player1.GetPlayerName() + "'s item's stats at end of this round");
         logText += "\n" + player1.GetPlayerName() + "'s item's stats at end of this round\n";
