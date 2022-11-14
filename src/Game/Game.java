@@ -15,6 +15,7 @@ public class Game
     public static Player.DeckItem deckItem1, deckItem2;
     public static int maxRound = 10;
     public static boolean isHumanGame = false;
+    public static int gameStatus = 0;
     static Random rng = new Random();
     static String logText = "";
     static File logFile = null;
@@ -43,43 +44,49 @@ public class Game
         for(i = 0; i < maxRound; i++)
         {
             PlayARound(selectionOfHuman);
+            CheckAndResetIsUsedFlags();
+            gameStatus = CheckGameStatus(i);
+            WriteToLogFile();
+        }
 
-            boolean resetIsUsedFlag = true;
+        gameStatus = CheckGameStatus(i);
+        WriteToLogFile();
+    }
+
+    public static void CheckAndResetIsUsedFlags()
+    {
+        boolean resetIsUsedFlag = true;
+        for(Player.DeckItem item : player1.GetItemDeck())
+            resetIsUsedFlag &= item.isUsed;
+
+        if(resetIsUsedFlag)
+        {
             for(Player.DeckItem item : player1.GetItemDeck())
-                resetIsUsedFlag &= item.isUsed;
+                item.isUsed = false;
 
-            if(resetIsUsedFlag)
-            {
-                for(Player.DeckItem item : player1.GetItemDeck())
-                    item.isUsed = false;
+            System.out.println(player1.GetPlayerName() + " used all of his items!\n\n");
+            logText += player1.GetPlayerName() + " used all of his items!\n\n\n";
+        }
 
-                System.out.println(player1.GetPlayerName() + " used all of his items!\n\n");
-                logText += player1.GetPlayerName() + " used all of his items!\n\n\n";
-            }
+        for(Player.DeckItem item : player2.GetItemDeck())
+            resetIsUsedFlag &= item.isUsed;
 
+        if(resetIsUsedFlag)
+        {
             for(Player.DeckItem item : player2.GetItemDeck())
-                resetIsUsedFlag &= item.isUsed;
+                item.isUsed = false;
 
-            if(resetIsUsedFlag)
-            {
-                for(Player.DeckItem item : player2.GetItemDeck())
-                    item.isUsed = false;
+            System.out.println(player2.GetPlayerName() + " used all of his items!\n\n");
+            logText += player2.GetPlayerName() + " used all of his items!\n\n\n";
+        }
+    }
 
-                System.out.println(player2.GetPlayerName() + " used all of his items!\n\n");
-                logText += player2.GetPlayerName() + " used all of his items!\n\n\n";
-            }
-
-            if(player1.GetItemDeck().size() == 0 && player2.GetItemDeck().size() > 0)
-            {
-                System.out.println(player2.GetPlayerName() + " won! Player's stats");
-
-                logText += player2.GetPlayerName() + " won! Player's stats\n";
-                logText += player1.ShowScore();
-                logText += player2.ShowScore();
-
-                break;
-            }
-            else if(player1.GetItemDeck().size() > 0 && player2.GetItemDeck().size() == 0)
+    // 0: Game still continues | 1: Player 1 won | 2: Player 2 won | 3: Draw
+    public static int CheckGameStatus(int currentRound)
+    {
+        if(currentRound < maxRound)
+        {
+            if(player1.GetItemDeck().size() > 0 && player2.GetItemDeck().size() == 0)
             {
                 System.out.println(player1.GetPlayerName() + " won! Player's stats");
 
@@ -87,7 +94,17 @@ public class Game
                 logText += player1.ShowScore();
                 logText += player2.ShowScore();
 
-                break;
+                return 1;
+            }
+            else if(player1.GetItemDeck().size() == 0 && player2.GetItemDeck().size() > 0)
+            {
+                System.out.println(player2.GetPlayerName() + " won! Player's stats");
+
+                logText += player2.GetPlayerName() + " won! Player's stats\n";
+                logText += player1.ShowScore();
+                logText += player2.ShowScore();
+
+                return 2;
             }
             else if(player1.GetItemDeck().size() == 0 && player2.GetItemDeck().size() == 0)
             {
@@ -97,27 +114,10 @@ public class Game
                 logText += player1.ShowScore();
                 logText += player2.ShowScore();
 
-                break;
-            }
-
-            try
-            {
-                FileWriter fw = new FileWriter(logFile.getName(), true);
-                fw.write(logText);
-                fw.close();
-            }
-            catch(Exception e)
-            {
-                System.out.println("Shit happened.");
-                e.printStackTrace();
-            }
-            finally
-            {
-                logText = "";
+                return 3;
             }
         }
-
-        if(i >= maxRound)
+        else
         {
             if(player1.GetPlayerScore() > player2.GetPlayerScore())
             {
@@ -126,6 +126,8 @@ public class Game
                 logText += player1.GetPlayerName() + " won! Player's stats\n";
                 logText += player1.ShowScore();
                 logText += player2.ShowScore();
+
+                return 1;
             }
             else if(player1.GetPlayerScore() < player2.GetPlayerScore())
             {
@@ -134,6 +136,8 @@ public class Game
                 logText += player2.GetPlayerName() + " won! Player's stats\n";
                 logText += player1.ShowScore();
                 logText += player2.ShowScore();
+
+                return 2;
             }
             else
             {
@@ -142,20 +146,12 @@ public class Game
                 logText += "Draw! Player's stats\n";
                 logText += player1.ShowScore();
                 logText += player2.ShowScore();
+
+                return 3;
             }
         }
 
-        try
-        {
-            FileWriter fw = new FileWriter(logFile.getName(), true);
-            fw.write(logText);
-            fw.close();
-        }
-        catch(Exception e)
-        {
-            System.out.println("Shit happened.");
-            e.printStackTrace();
-        }
+        return 0;
     }
 
     public static void InitializeLogFile()
@@ -169,6 +165,25 @@ public class Game
         {
             System.out.println("Shit happened.");
             e.printStackTrace();
+        }
+    }
+
+    public static void WriteToLogFile()
+    {
+        try
+        {
+            FileWriter fw = new FileWriter(logFile.getName(), true);
+            fw.write(logText);
+            fw.close();
+        }
+        catch(Exception e)
+        {
+            System.out.println("Shit happened.");
+            e.printStackTrace();
+        }
+        finally
+        {
+            logText = "";
         }
     }
 
