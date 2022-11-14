@@ -46,6 +46,10 @@ public class Game
             PlayARound(selectionOfHuman);
             CheckAndResetIsUsedFlags();
             gameStatus = CheckGameStatus(i);
+
+            if(gameStatus != 0)
+                break;
+
             WriteToLogFile();
         }
 
