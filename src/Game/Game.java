@@ -315,8 +315,8 @@ public class Game
             }
         }
 
-        player1.UpdateItem(deckItem1);
-        player2.UpdateItem(deckItem2);
+        //player1.UpdateItem(deckItem1);
+        //player2.UpdateItem(deckItem2);
 
         System.out.println("\n" + player1.GetPlayerName() + "'s item's stats at end of this round");
         logText += "\n" + player1.GetPlayerName() + "'s item's stats at end of this round\n";
