@@ -117,9 +117,9 @@ public class ComputerPlayer extends Player
     {
         do
         {
-            selection = super.rng.nextInt(super.GetItemDeck().size());
-        } while(super.GetItemDeck().get(selection).isUsed);
+            selection = super.rng.nextInt(super.deck.size());
+        } while(super.deck.get(selection).isUsed || super.deck.get(selection).object.GetDurability() <= 0.0);
 
-        return super.GetItemDeck().get(selection);
+        return super.deck.get(selection);
     }
 }
