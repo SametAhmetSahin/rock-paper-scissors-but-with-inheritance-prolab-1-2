@@ -116,6 +116,8 @@ public class Game
 
                 return 3;
             }
+            else
+                return 0;
         }
         else
         {
@@ -150,8 +152,6 @@ public class Game
                 return 3;
             }
         }
-
-        return 0;
     }
 
     public static void InitializeLogFile()
