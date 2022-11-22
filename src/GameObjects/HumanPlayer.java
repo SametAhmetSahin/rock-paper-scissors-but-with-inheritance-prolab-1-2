@@ -122,6 +122,14 @@ public class HumanPlayer extends Player
     @Override
     public DeckItem SelectItem(int selection)
     {
-        return (selection < 0 || selection >= super.deck.size()) ? null : super.deck.get(selection);
+        //return (selection < 0 || selection >= super.deck.size()) ? null : super.deck.get(selection);
+
+        for(DeckItem i : deck)
+        {
+            if(selection == i.id)
+                return i;
+        }
+
+        return null;
     }
 }

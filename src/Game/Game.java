@@ -4,6 +4,7 @@ import WebServer.*;
 import GameObjects.*;
 import java.io.IOException;
 import java.util.Random;
+import java.util.Scanner;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.io.File;
@@ -11,6 +12,8 @@ import java.io.FileWriter;
 
 public class Game
 {
+    public static boolean DEBUG = false;
+
     public static Player player1, player2;
     public static Player.DeckItem deckItem1, deckItem2;
     public static int maxRound = 10;
@@ -19,6 +22,7 @@ public class Game
     static Random rng = new Random();
     static String logText = "";
     static File logFile = null;
+    static Scanner input = new Scanner(System.in);
 
     public static int selectionOfHuman = 0;
     public static double startDurability = 20.0, startLevelPoint = 0.0,
@@ -33,9 +37,14 @@ public class Game
         //WebServer server = new WebServer();
         //server.Start(port);
 
-        InitializeGame();
-        InitializeLogFile();
-        HandleGameplay();
+        if(DEBUG)
+        {
+            int[] someDeck = { 0, 1, 2, 0, 1 };
+
+            InitializeGame(someDeck);
+            InitializeLogFile();
+            HandleGameplay();
+        }
     }
 
     public static void HandleGameplay()
@@ -193,11 +202,13 @@ public class Game
 
     public static void InitializeGame(int[] startingDeck)
     {
+        isHumanGame = true;
         InitializeHumanAiGame(startingDeck);
     }
 
     public static void InitializeGame()
     {
+        isHumanGame = false;
         InitializeAiAiGame();
     }
 
@@ -243,12 +254,48 @@ public class Game
         logText += "======================== START OF ROUND =========================\n";
 
         System.out.println(player1.GetPlayerName() + " has " + player1.GetItemDeck().size() + " item(s) in his deck.");
-        System.out.println(player2.GetPlayerName() + " has " + player2.GetItemDeck().size() + " item(s) in his deck.\n");
         logText += player1.GetPlayerName() + " has " + player1.GetItemDeck().size() + " item(s) in his deck.\n";
+
+        System.out.println("---------------------------------------------------------------------");
+        logText += "---------------------------------------------------------------------\n";
+        for(Player.DeckItem i : player1.deck)
+        {
+            System.out.println("|\t" + i.id + "\t|\t" + i.object.GetType() + "\t|\tDurability: " + i.object.GetDurability() + "\t|\tLevel Point: " + i.object.GetLevelPoint() + "\t|");
+            logText += "|\t" + i.id + "\t|\t" + i.object.GetType() + "\t|\tDurability: " + i.object.GetDurability() + "\t|\tLevel Point: " + i.object.GetLevelPoint() + "\t|\n";
+        }
+        System.out.println("---------------------------------------------------------------------\n");
+        logText += "---------------------------------------------------------------------\n\n";
+
+        System.out.println(player2.GetPlayerName() + " has " + player2.GetItemDeck().size() + " item(s) in his deck.\n");
         logText += player2.GetPlayerName() + " has " + player2.GetItemDeck().size() + " item(s) in his deck.\n\n";
+
+        System.out.println("---------------------------------------------------------------------");
+        logText += "---------------------------------------------------------------------\n";
+        for(Player.DeckItem i : player2.deck)
+        {
+            System.out.println("|\t" + i.id + "\t|\t" + i.object.GetType() + "\t|\tDurability: " + i.object.GetDurability() + "\t|\tLevel Point: " + i.object.GetLevelPoint() + "\t|");
+            logText += "|\t" + i.id + "\t|\t" + i.object.GetType() + "\t|\tDurability: " + i.object.GetDurability() + "\t|\tLevel Point: " + i.object.GetLevelPoint() + "\t|\n";
+        }
+        System.out.println("---------------------------------------------------------------------\n");
+        logText += "---------------------------------------------------------------------\n\n";
+
+        if(isHumanGame && DEBUG)
+        {
+            System.out.print("Kullanici girisi: ");
+            selectionOfHuman = input.nextInt();
+        }
+
+        //deckItem1 = null;
+        //deckItem2 = null;
 
         deckItem1 = player1.SelectItem(humanSelection);
         deckItem2 = player2.SelectItem(humanSelection);
+
+        if(DEBUG)
+        {
+            System.out.println("deckItem1: " + deckItem1);
+            System.out.println("deckItem2: " + deckItem2);
+        }
 
         System.out.println(player1.GetPlayerName() + " chose " + deckItem1.object.GetType().toString());
         System.out.println(player2.GetPlayerName() + " chose " + deckItem2.object.GetType().toString());

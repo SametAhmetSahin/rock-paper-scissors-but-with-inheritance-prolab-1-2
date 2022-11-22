@@ -10,7 +10,7 @@ public abstract class Player
     {
         public GameObject object;
         public boolean isUsed;
-        long id;
+        public long id;
 
         DeckItem(GameObject startItem, long startID)
         {
@@ -129,9 +129,9 @@ public abstract class Player
 
     public void InitializeDeck(int[] startingDeck)
     {
-        for(int i : startingDeck)
+        for(int i = 0; i < startingDeck.length; i++)
         {
-            switch (i)
+            switch (startingDeck[i])
             {
                 case 0 -> this.deck.add(new DeckItem(new Rock(Game.startDurability, Game.startLevelPoint, Game.startRockHardness), i));
                 case 1 -> this.deck.add(new DeckItem(new Paper(Game.startDurability, Game.startLevelPoint, Game.startPaperInfluence), i));
