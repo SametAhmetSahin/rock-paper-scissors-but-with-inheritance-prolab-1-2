@@ -33,7 +33,7 @@ public class Game
         //WebServer server = new WebServer();
         //server.Start(port);
 
-        InitializeGame(isHumanGame);
+        InitializeGame();
         InitializeLogFile();
         HandleGameplay();
     }
@@ -191,17 +191,17 @@ public class Game
         }
     }
 
-    public static void InitializeGame(boolean isHuman)
+    public static void InitializeGame(int[] startingDeck)
     {
-        isHumanGame = isHuman;
-
-        if(isHumanGame)
-            InitializeHumanAiGame();
-        else
-            InitializeAiAiGame();
+        InitializeHumanAiGame(startingDeck);
     }
 
-    public static void InitializeHumanAiGame()
+    public static void InitializeGame()
+    {
+        InitializeAiAiGame();
+    }
+
+    public static void InitializeHumanAiGame(int[] startingDeck)
     {
         long startID;
         do
@@ -209,7 +209,7 @@ public class Game
             startID = rng.nextLong();
         } while(startID < 0);
 
-        player1 = new HumanPlayer(startID, "Sen");
+        player1 = new HumanPlayer(startID, "Sen", startingDeck);
 
         do
         {

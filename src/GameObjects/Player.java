@@ -127,6 +127,19 @@ public abstract class Player
         }
     }
 
+    public void InitializeDeck(int[] startingDeck)
+    {
+        for(int i : startingDeck)
+        {
+            switch (i)
+            {
+                case 0 -> this.deck.add(new DeckItem(new Rock(Game.startDurability, Game.startLevelPoint, Game.startRockHardness), i));
+                case 1 -> this.deck.add(new DeckItem(new Paper(Game.startDurability, Game.startLevelPoint, Game.startPaperInfluence), i));
+                case 2 -> this.deck.add(new DeckItem(new Scissor(Game.startDurability, Game.startLevelPoint, Game.startScissorSharpness), i));
+            }
+        }
+    }
+
     public ArrayList<DeckItem> GetItemDeck()
     {
         return this.deck;
