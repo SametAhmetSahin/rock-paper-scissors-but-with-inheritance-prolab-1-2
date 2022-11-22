@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.io.File;
 import java.io.FileWriter;
+import com.google.gson.*;
 
 public class Game
 {
@@ -45,6 +46,21 @@ public class Game
             InitializeLogFile();
             HandleGameplay();
         }
+    }
+
+    public static String GetGameInfo()
+    {
+        String jsonstring = "";
+        Gson gson = new Gson();
+
+        String player1itemdeck = "\"player1deck\":";
+        player1itemdeck += gson.toJson(player1.GetItemDeck());
+
+        String player2itemdeck = "\"player2deck\":";
+        player2itemdeck += gson.toJson(player2.GetItemDeck());
+
+        jsonstring = "{" + player1itemdeck + "," + player2itemdeck + "}";
+        return jsonstring;
     }
 
     public static void HandleGameplay()
