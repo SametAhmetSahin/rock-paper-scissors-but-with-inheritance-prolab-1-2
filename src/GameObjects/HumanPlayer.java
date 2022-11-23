@@ -32,7 +32,7 @@ public class HumanPlayer extends Player
         super.InitializeDeck(startingDeck);
     }
 
-    public HumanPlayer(long ID, String name, int[] startingDeck, long startScore)
+    public HumanPlayer(long ID, String name, int[] startingDeck, double startScore)
     {
         super.SetPlayerID(ID);
         super.SetPlayerName(name);
