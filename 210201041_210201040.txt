@@ -1,4 +1,17 @@
-==> ./Prolab-1.2-Godot-GUI/Requests.gd <==
+extends Control
+
+
+
+func _on_hcgame_pressed():
+	Globalvars.human = true
+	get_tree().change_scene("res://DeckSelect.tscn")
+	pass # Replace with function body.
+
+func _on_ccgame_pressed():
+	Globalvars.human = false
+	get_tree().change_scene("res://Battle.tscn")
+	pass # Replace with function body.
+
 extends Node2D
 
 
@@ -33,8 +46,6 @@ func post_request(url="", query=""):
 
 func _http_request_completed(result, response_code, headers, body):
 	Globalvars.setResponse(body.get_string_from_utf8())
-
-==> ./Prolab-1.2-Godot-GUI/DeckSelect.gd <==
 extends Control
 
 
@@ -79,8 +90,6 @@ func _on_ScissorsButton_pressed():
 
 func _on_Button_pressed():
 	get_tree().change_scene("res://Battle.tscn")
-
-==> ./Prolab-1.2-Godot-GUI/Battle.gd <==
 extends Control
 
 onready var requests = $Requests
@@ -90,33 +99,55 @@ func wait_for_request(req):
 
 func _ready():
 
+	if Globalvars.human:
 	#wait_for_request(requests.post_request("http://localhost:8080/initializegame", {"\"deck\"": Globalvars.cards}))
-	var post_req = requests.post_request("http://localhost:8080/initializegame", {"\"deck\"": Globalvars.cards})
-	yield(post_req, "request_completed")
-	print("response: " + str(Globalvars.response) + " endresponse")
+		var post_req = requests.post_request("http://localhost:8080/initializegame", {"\"deck\"": Globalvars.cards})
+		yield(post_req, "request_completed")
+		print("response: " + str(Globalvars.response) + " endresponse")
+	
+	else:
+		var post_req = requests.post_request("http://localhost:8080/initializegame", {"\"deck\"": [0, 1, 2, 2, 2]})
+		yield(post_req, "request_completed")
+		print("response: " + str(Globalvars.response) + " endresponse")
 	updateGame()
-	
-	#print()
-	
+
 func updateGame():
+	var get_req1 = requests.get_request("http://localhost:8080/checkgamestatus?a=a")
+	yield(get_req1, "request_completed")
+	
+	match Globalvars.response:
+		1:
+			Globalvars.gamestatuscode=1
+			get_tree().change_scene("res://gameover.tscn")
+		2:
+			Globalvars.gamestatuscode=2
+			get_tree().change_scene("res://gameover.tscn")
+		3:
+			Globalvars.gamestatuscode=3
+			get_tree().change_scene("res://gameover.tscn")
+	
+
 	var get_req = requests.get_request("http://localhost:8080/getgamestatus?a=a")
 	yield(get_req, "request_completed")
 	Globalvars.UpdateGameStatus()
-	#print("gamestatus:" + str(Globalvars.gamestatus["player1deck"]))
+	print("gamestatus:" + str(Globalvars.gamestatus))
 	$player1/Deck.updateDeck()
 	$player2/Deck.updateDeck()
 
 func _on_Button_pressed():
-	if Globalvars.selectedCard != null:
-		print(Globalvars.selectedCard.id)
-		var post_req = requests.post_request("http://localhost:8080/playaround", {"\"selection\"": Globalvars.selectedCard.id})
-		yield(post_req, "request_completed")
-		print("response: " + str(Globalvars.response) + " endresponse")
-		
-		updateGame()
-	
+	if Globalvars.human:
+		if Globalvars.selectedCard != null:
+			print(Globalvars.selectedCard.id)
+			var post_req = requests.post_request("http://localhost:8080/playaround", {"\"selection\"": Globalvars.selectedCard.id})
+			yield(post_req, "request_completed")
 
-==> ./Prolab-1.2-Godot-GUI/PlayerUI.gd <==
+			updateGame()
+	else:
+		var post_req = requests.post_request("http://localhost:8080/playaround", {"\"selection\"": 0})
+		yield(post_req, "request_completed")
+
+		updateGame()
+		
 extends Control
 
 
@@ -125,8 +156,6 @@ func set_player_name(name):
 
 func set_player_score(score):
 	$Info/Score.text = score
-
-==> ./Prolab-1.2-Godot-GUI/globalvars.gd <==
 extends Node
 
 
@@ -138,18 +167,23 @@ var gamestatus
 
 var selectedCard
 
+var human = true
+
+var gamestatuscode=0
+
 func setResponse(string):
 	response = string
 	print("setResponse ")# + string)
 
 func UpdateGameStatus():
 	print("Updating game status")
+	print("response is:" + str(response))
 	var parse_result: JSONParseResult = JSON.parse(response)
+	print("parse ok")
+	print(parse_result.error == OK)
 	#print("parse_result " + str(parse_result))
 	gamestatus = parse_result.get_result()
 	print(typeof(gamestatus))
-
-==> ./Prolab-1.2-Godot-GUI/SelectionCard.gd <==
 extends PanelContainer
 
 var selected = false
@@ -178,10 +212,28 @@ func deleteCard(card_to_delete):
 
 func _on_TextureButton_pressed():
 	deleteCard(get_parent())
+extends Control
 
-==> ./Prolab-1.2-Godot-GUI/Main.gd <==
+func _ready():
+	
+	var requests = load("res://Requests.tscn").instance()
+	
 
-==> ./Prolab-1.2-Godot-GUI/Card.gd <==
+	var get_req = requests.get_request("http://localhost:8080/checkgamestatus?a=a")
+	yield(get_req, "request_completed")
+	
+	var scores = Globalvars.response.split(",")
+	
+	match Globalvars.gamestatuscode:
+		1:
+			$PanelContainer/VBoxContainer/RichTextLabel.text += "\nPlayer 1 Won!"
+		2:
+			$PanelContainer/VBoxContainer/RichTextLabel.text += "\nPlayer 2 Won!"
+		3:
+			$PanelContainer/VBoxContainer/RichTextLabel.text += "\nIt's a Draw!"
+			
+	$PanelContainer/VBoxContainer/RichTextLabel.text += "\nScores:\nPlayer1:" + scores[0] + "\nPlayer2:" + scores[1] + "\n"
+
 extends PanelContainer
 
 var selected = false
@@ -224,8 +276,6 @@ func _on_TextureButton_pressed():
 		else:
 			select()
 			
-
-==> ./Prolab-1.2-Godot-GUI/Deck.gd <==
 extends Control
 
 
@@ -278,8 +328,6 @@ func removeCard(card):
 	print("Removed card " + str(card) + "from deck!")
 	
 	
-
-==> ./Prolab-1.2-Godot-GUI/CardNode.gd <==
 extends Control
 
 
@@ -320,8 +368,6 @@ func setCard(cardtype):
 
 func getCard():
 	return $Card.card
-
-==> ./src/WebServer/WebServer.java <==
 package WebServer;
 
 import com.sun.net.httpserver.HttpServer;
@@ -341,6 +387,8 @@ public class WebServer
         server.createContext("/initializegame", new InitializeGame());
         server.createContext("/playaround", new PlayARoundHandler());
         server.createContext("/getgamestatus", new GetGameStatusHandler());
+        server.createContext("/checkgamestatus", new GameStatusHandler());
+        server.createContext("/getscores", new GetScoresHandler());
         /*
         server.createContext("/echoHeader", new EchoHeaderHandler());
         server.createContext("/echoPost", new EchoPostHandler());
@@ -351,8 +399,6 @@ public class WebServer
     }
 }
 
-
-==> ./src/WebServer/GetGameStatusHandler.java <==
 package WebServer;
 
 import Game.Game;
@@ -388,9 +434,7 @@ public class GetGameStatusHandler implements HttpHandler
 
         System.out.println("query: " + query);
     }
-}
-==> ./src/WebServer/PostHandler.java <==
-package WebServer;
+}package WebServer;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -446,9 +490,77 @@ public class PostHandler implements HttpHandler
         os.close();
     }
 }
-
-==> ./src/WebServer/PlayARoundHandler.java <==
 package WebServer;
+
+import Game.Game;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URI;
+import java.util.HashMap;
+
+import static WebServer.RootHandler.parseQuery;
+import Game.*;
+
+public class GameStatusHandler implements HttpHandler
+{
+    @Override
+    public void handle(HttpExchange he) throws IOException
+    {
+        // parse request
+        URI requestedUri = he.getRequestURI();
+        String query = requestedUri.getRawQuery();
+        HashMap<String, String> queryData = parseQuery(query);
+
+        // send response
+        String response = "";
+        response += Game.CheckGameStatus(Game.currentRound);
+
+        he.sendResponseHeaders(200, response.length());
+        OutputStream os = he.getResponseBody();
+        os.write(response.getBytes());
+
+        os.close();
+
+        System.out.println("query: " + query);
+    }
+}package WebServer;
+
+import Game.Game;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URI;
+import java.util.HashMap;
+
+import static WebServer.RootHandler.parseQuery;
+
+public class GetScoresHandler implements HttpHandler
+{
+    @Override
+    public void handle(HttpExchange he) throws IOException
+    {
+        // parse request
+        URI requestedUri = he.getRequestURI();
+        String query = requestedUri.getRawQuery();
+        HashMap<String, String> queryData = parseQuery(query);
+
+        // send response
+        String response = "";
+        response += Game.player1.GetPlayerScore() + "," + Game.player2.GetPlayerScore();
+
+        he.sendResponseHeaders(200, response.length());
+        OutputStream os = he.getResponseBody();
+        os.write(response.getBytes());
+
+        os.close();
+
+    }
+}package WebServer;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -512,8 +624,6 @@ public class PlayARoundHandler implements HttpHandler
 
     }
 }
-
-==> ./src/WebServer/InitializeGame.java <==
 package WebServer;
 
 import Game.Game;
@@ -603,9 +713,7 @@ public class InitializeGame implements HttpHandler
         //Game.InitializeGame(Boolean.parseBoolean(queryData.get("human")));
 
     }
-}
-==> ./src/WebServer/RootHandler.java <==
-package WebServer;
+}package WebServer;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -639,9 +747,7 @@ public class RootHandler implements HttpHandler
         os.write(response.getBytes());
         os.close();
     }
-}
-==> ./src/WebServer/GetHandler.java <==
-package WebServer;
+}package WebServer;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -675,9 +781,7 @@ public class GetHandler implements HttpHandler
 
         System.out.println("query: " + query);
     }
-}
-==> ./src/GameObjects/Player.java <==
-package GameObjects;
+}package GameObjects;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -834,8 +938,6 @@ public abstract class Player
 
     public abstract DeckItem SelectItem(int selection);
 }
-
-==> ./src/GameObjects/HeavyRock.java <==
 package GameObjects;
 
 public class HeavyRock extends Rock
@@ -950,8 +1052,6 @@ public class HeavyRock extends Rock
         return 0;
     }
 }
-
-==> ./src/GameObjects/ComputerPlayer.java <==
 package GameObjects;
 
 import Game.Game;
@@ -1077,8 +1177,6 @@ public class ComputerPlayer extends Player
         return super.deck.get(selection);
     }
 }
-
-==> ./src/GameObjects/Scissor.java <==
 package GameObjects;
 
 public class Scissor extends GameObject
@@ -1188,8 +1286,6 @@ public class Scissor extends GameObject
         return 0;
     }
 }
-
-==> ./src/GameObjects/MasterScissor.java <==
 package GameObjects;
 
 public class MasterScissor extends Scissor
@@ -1304,8 +1400,6 @@ public class MasterScissor extends Scissor
         return 0;
     }
 }
-
-==> ./src/GameObjects/Rock.java <==
 package GameObjects;
 
 public class Rock extends GameObject
@@ -1415,8 +1509,6 @@ public class Rock extends GameObject
         return 0;
     }
 }
-
-==> ./src/GameObjects/GameObject.java <==
 package GameObjects;
 
 public abstract class GameObject
@@ -1505,8 +1597,6 @@ public abstract class GameObject
 
     public abstract int UpdateStats(double addToDurability, double addToLevelPoint);
 }
-
-==> ./src/GameObjects/HumanPlayer.java <==
 package GameObjects;
 
 import Game.Game;
@@ -1642,8 +1732,6 @@ public class HumanPlayer extends Player
         return null;
     }
 }
-
-==> ./src/GameObjects/Paper.java <==
 package GameObjects;
 
 public class Paper extends GameObject
@@ -1753,8 +1841,6 @@ public class Paper extends GameObject
         return 0;
     }
 }
-
-==> ./src/GameObjects/SpecialPaper.java <==
 package GameObjects;
 
 public class SpecialPaper extends Paper
@@ -1869,8 +1955,6 @@ public class SpecialPaper extends Paper
         return 0;
     }
 }
-
-==> ./src/Game/Game.java <==
 package Game;
 
 import WebServer.*;
@@ -1936,10 +2020,7 @@ public class Game
         String player2itemdeck = "\"player2deck\":";
         player2itemdeck += gson.toJson(player2.GetItemDeck());
 
-        String[] gameinfo = {};
-
-
-        jsonstring = "{" + player1itemdeck + "," + player2itemdeck + "," + gson.toJson(gameinfo) + "}";
+        jsonstring = "{" + player1itemdeck + "," + player2itemdeck + "}";
         return jsonstring;
     }
 
@@ -2156,7 +2237,7 @@ public class Game
         logText += "---------------------------------------------------------------------\n";
         for(Player.DeckItem i : player1.deck)
         {
-            System.out.println("|\t" + i.id + "\t|\t" + i.object.GetType() + "\t|\tDurability: " + i.object.GetDurability() + "\t|\tLevel Point: " + i.object.GetLevelPoint() + "\t|");
+            System.out.println("|\t" + i.id + "\t|\t" + i.object.GetType() + "\t|\tDurability: " + i.object.GetDurability() + "\t|\tLevel Point: " + i.object.GetLevelPoint() + "\t|\tisUsed: " + (i.isUsed)+"\t|");
             logText += "|\t" + i.id + "\t|\t" + i.object.GetType() + "\t|\tDurability: " + i.object.GetDurability() + "\t|\tLevel Point: " + i.object.GetLevelPoint() + "\t|\n";
         }
         System.out.println("---------------------------------------------------------------------\n");
@@ -2169,7 +2250,7 @@ public class Game
         logText += "---------------------------------------------------------------------\n";
         for(Player.DeckItem i : player2.deck)
         {
-            System.out.println("|\t" + i.id + "\t|\t" + i.object.GetType() + "\t|\tDurability: " + i.object.GetDurability() + "\t|\tLevel Point: " + i.object.GetLevelPoint() + "\t|");
+            System.out.println("|\t" + i.id + "\t|\t" + i.object.GetType() + "\t|\tDurability: " + i.object.GetDurability() + "\t|\tLevel Point: " + i.object.GetLevelPoint() + "\t|\tisUsed: " + (i.isUsed)+"\t|");
             logText += "|\t" + i.id + "\t|\t" + i.object.GetType() + "\t|\tDurability: " + i.object.GetDurability() + "\t|\tLevel Point: " + i.object.GetLevelPoint() + "\t|\n";
         }
         System.out.println("---------------------------------------------------------------------\n");
