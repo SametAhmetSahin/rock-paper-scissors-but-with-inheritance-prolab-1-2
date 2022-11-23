@@ -1,0 +1,2296 @@
+==> ./Prolab-1.2-Godot-GUI/Requests.gd <==
+extends Node2D
+
+
+# Declare member variables here. Examples:
+# var a = 2
+# var b = "text"
+
+func get_request(url, parameters=""):
+	var new_request = HTTPRequest.new()
+	add_child(new_request)
+	new_request.connect("request_completed", self, "_http_request_completed")
+	var error = new_request.request(url + str(parameters))
+	if error != OK:
+		push_error("An error occured")
+	return new_request
+
+func dict_to_get_parameters(dict):
+	var result = ""
+	for key in dict.keys():
+		result += key + "=" + str(dict[key])
+		if key != dict.keys()[-1]:
+			result += "&"
+	return result
+
+func post_request(url="", query=""):
+	var new_request = HTTPRequest.new()
+	add_child(new_request)
+	new_request.connect("request_completed", self, "_http_request_completed")
+	new_request.request(url, ["Content-Type: application/json"], false, HTTPClient.METHOD_POST, str(query))
+	return new_request
+# Called when the node enters the scene tree for the first time.
+
+func _http_request_completed(result, response_code, headers, body):
+	Globalvars.setResponse(body.get_string_from_utf8())
+
+==> ./Prolab-1.2-Godot-GUI/DeckSelect.gd <==
+extends Control
+
+
+# Declare member variables here. Examples:
+# var a = 2
+# var b = "text"
+
+var selectedcardcount = 0
+var maxcardcount = 5
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+#func _process(delta):
+#	pass
+onready var CardNode = preload("res://SelectionCard.tscn")
+
+func _on_RockCard_pressed():
+	if selectedcardcount < maxcardcount:
+		var card = CardNode.instance()
+		card.setCard("rock")
+		$PanelContainer/VBoxContainer/Deck.addCard(card)
+
+
+
+func _on_PaperButton_pressed():
+	if selectedcardcount < maxcardcount:
+		var card = CardNode.instance()
+		card.setCard("paper")
+		$PanelContainer/VBoxContainer/Deck.addCard(card)
+
+
+func _on_ScissorsButton_pressed():
+	if selectedcardcount < maxcardcount:
+		var card = CardNode.instance()
+		card.setCard("scissors")
+		$PanelContainer/VBoxContainer/Deck.addCard(card)
+
+
+func _on_Button_pressed():
+	get_tree().change_scene("res://Battle.tscn")
+
+==> ./Prolab-1.2-Godot-GUI/Battle.gd <==
+extends Control
+
+onready var requests = $Requests
+
+func wait_for_request(req):
+	yield(req, "request_completed")
+
+func _ready():
+
+	#wait_for_request(requests.post_request("http://localhost:8080/initializegame", {"\"deck\"": Globalvars.cards}))
+	var post_req = requests.post_request("http://localhost:8080/initializegame", {"\"deck\"": Globalvars.cards})
+	yield(post_req, "request_completed")
+	print("response: " + str(Globalvars.response) + " endresponse")
+	updateGame()
+	
+	#print()
+	
+func updateGame():
+	var get_req = requests.get_request("http://localhost:8080/getgamestatus?a=a")
+	yield(get_req, "request_completed")
+	Globalvars.UpdateGameStatus()
+	#print("gamestatus:" + str(Globalvars.gamestatus["player1deck"]))
+	$player1/Deck.updateDeck()
+	$player2/Deck.updateDeck()
+
+func _on_Button_pressed():
+	if Globalvars.selectedCard != null:
+		print(Globalvars.selectedCard.id)
+		var post_req = requests.post_request("http://localhost:8080/playaround", {"\"selection\"": Globalvars.selectedCard.id})
+		yield(post_req, "request_completed")
+		print("response: " + str(Globalvars.response) + " endresponse")
+		
+		updateGame()
+	
+
+==> ./Prolab-1.2-Godot-GUI/PlayerUI.gd <==
+extends Control
+
+
+func set_player_name(name):
+	$Info/Name.text = name
+
+func set_player_score(score):
+	$Info/Score.text = score
+
+==> ./Prolab-1.2-Godot-GUI/globalvars.gd <==
+extends Node
+
+
+var cards = []
+
+var response = ""
+
+var gamestatus
+
+var selectedCard
+
+func setResponse(string):
+	response = string
+	print("setResponse ")# + string)
+
+func UpdateGameStatus():
+	print("Updating game status")
+	var parse_result: JSONParseResult = JSON.parse(response)
+	#print("parse_result " + str(parse_result))
+	gamestatus = parse_result.get_result()
+	print(typeof(gamestatus))
+
+==> ./Prolab-1.2-Godot-GUI/SelectionCard.gd <==
+extends PanelContainer
+
+var selected = false
+var selectable = true
+# Declare member variables here. Examples:
+# var a = 2
+# var b = "text"
+
+# 0 is rock, 1 is paper, 2 is scissors
+export (int, 0, 5) var card = 0;
+var card_sprites = ["res://rock.png", "res://paper.png", "res://scissors.png"]
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	
+	$VBoxContainer/TextureButton.texture_normal = load(card_sprites[card%3])
+	if card > 2:
+		$VBoxContainer/TextureButton.modulate = Color((card%3)-0.25, (card%2)-0.25, (card)-0.25)
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+#func _process(delta):
+#	pass
+
+func deleteCard(card_to_delete):
+	for i in get_tree().get_nodes_in_group("playerselectiondeck"):
+		i.removeCard(card_to_delete)
+
+func _on_TextureButton_pressed():
+	deleteCard(get_parent())
+
+==> ./Prolab-1.2-Godot-GUI/Main.gd <==
+
+==> ./Prolab-1.2-Godot-GUI/Card.gd <==
+extends PanelContainer
+
+var selected = false
+var selectable = true
+# Declare member variables here. Examples:
+# var a = 2
+# var b = "text"
+
+# 0 is rock, 1 is paper, 2 is scissors
+export (int, 0, 5) var card = 0;
+var cardTypes = {"Rock":0, "Paper":1, "Scissor":2, "HeavyRock":3, "SpecialPaper":4, "MasterScissor":5} 
+var card_sprites = ["res://rock.png", "res://paper.png", "res://scissors.png"]
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	updateTexture()
+
+func updateTexture():
+	$VBoxContainer/TextureButton.texture_normal = load(card_sprites[card%3])
+	if card > 2:
+		$VBoxContainer/TextureButton.modulate = Color((card%3)-0.25, (card%2)-0.25, (card)-0.25)
+
+func select():
+	selected = true
+	Globalvars.selectedCard = get_parent()
+	
+func _physics_process(delta):
+	if Globalvars.selectedCard == get_parent():
+		rect_position.y = -50
+	else:
+		rect_position.y = 0
+
+func unselect():
+	selected = false
+	Globalvars.selectedCard = null
+
+func _on_TextureButton_pressed():
+	if selectable:
+		if selected:
+			unselect()
+		else:
+			select()
+			
+
+==> ./Prolab-1.2-Godot-GUI/Deck.gd <==
+extends Control
+
+
+# Declare member variables here. Examples:
+# var a = 2
+# var b = "text"
+onready var CardNode = preload("res://Card.tscn")
+		
+
+func _ready():
+	pass # Replace with function body.
+
+func cleanDeck():
+	for child in get_node("HBoxContainer").get_children():
+		child.queue_free()
+	Globalvars.selectedCard = null
+		
+func updateDeck():
+	cleanDeck()
+	var whichplayer = get_parent().name
+	var deck = Globalvars.gamestatus[whichplayer + "deck"]
+	#print(deck)
+	for item in deck:
+		var new_card_node = CardNode.instance()
+		
+		new_card_node.cardname = str2var(item["object"]["type"])
+		new_card_node.durability = int(item["object"]["durability"])
+		new_card_node.levelpoint = int(item["object"]["levelPoint"])
+		new_card_node.isUsed = item["isUsed"]
+		new_card_node.id = int(item["id"])
+		get_node("HBoxContainer").add_child(new_card_node)
+		new_card_node.updateLabels()
+		
+	pass
+
+func addCard(card):
+	Globalvars.cards.append(card.getCard())
+	$HBoxContainer.add_child(card)
+	print("Added card " + str(card) + "to deck!")
+	print(get_tree().get_root().get_children())
+	get_node("/root/DeckSelect").selectedcardcount += 1
+
+func removeCard(card):
+	$HBoxContainer.remove_child(card)
+	Globalvars.cards.erase(card.getCard())
+	card.queue_free()
+	
+	get_node("/root/DeckSelect").selectedcardcount -= 1
+	
+	print("Removed card " + str(card) + "from deck!")
+	
+	
+
+==> ./Prolab-1.2-Godot-GUI/CardNode.gd <==
+extends Control
+
+
+# Declare member variables here. Examples:
+# var a = 2
+# var b = "text"
+
+export var cardname: String = ""
+export var durability = 20
+export var levelpoint = 0
+export var id = 0
+export (bool) var isUsed = false
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+#func _process(delta):
+#	pass
+func updateLabels():
+	$Card/VBoxContainer/Durability.text = str(durability)
+	print(get_node("Card/VBoxContainer").get_children())
+	get_node("Card/VBoxContainer/Name").text = cardname
+	get_node("Card/VBoxContainer/LevelPoint").text = str(levelpoint)
+	get_node("Card").card = get_node("Card").cardTypes[cardname]
+	get_node("Card").updateTexture()
+	get_node("Card").modulate = Color(1, 1, 1, 1.0-float(int(isUsed))/2.0)
+	pass
+
+
+var cardtypes = {"rock":0, "paper":1, "scissors": 2}
+
+func setCard(cardtype):
+	$Card.card = cardtypes[cardtype]
+	cardname = cardtype
+
+func getCard():
+	return $Card.card
+
+==> ./src/WebServer/WebServer.java <==
+package WebServer;
+
+import com.sun.net.httpserver.HttpServer;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
+
+public class WebServer
+{
+    public void Start(int port) throws IOException
+    {
+        HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
+        System.out.println("server started at " + port);
+
+        server.createContext("/", new RootHandler());
+        server.createContext("/get", new GetHandler());
+        server.createContext("/initializegame", new InitializeGame());
+        server.createContext("/playaround", new PlayARoundHandler());
+        server.createContext("/getgamestatus", new GetGameStatusHandler());
+        /*
+        server.createContext("/echoHeader", new EchoHeaderHandler());
+        server.createContext("/echoPost", new EchoPostHandler());
+         */
+
+        server.setExecutor(null);
+        server.start();
+    }
+}
+
+
+==> ./src/WebServer/GetGameStatusHandler.java <==
+package WebServer;
+
+import Game.Game;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URI;
+import java.util.HashMap;
+
+import static WebServer.RootHandler.parseQuery;
+
+public class GetGameStatusHandler implements HttpHandler
+{
+    @Override
+    public void handle(HttpExchange he) throws IOException
+    {
+        // parse request
+        URI requestedUri = he.getRequestURI();
+        String query = requestedUri.getRawQuery();
+        HashMap<String, String> queryData = parseQuery(query);
+
+        // send response
+        String response = "";
+        response = Game.GetGameInfo();
+
+        he.sendResponseHeaders(200, response.length());
+        OutputStream os = he.getResponseBody();
+        os.write(response.getBytes());
+
+        os.close();
+
+        System.out.println("query: " + query);
+    }
+}
+==> ./src/WebServer/PostHandler.java <==
+package WebServer;
+
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import static WebServer.RootHandler.parseQuery;
+
+public class PostHandler implements HttpHandler
+{
+    @Override
+    public void handle(HttpExchange he) throws IOException
+    {
+        // parse request
+        InputStreamReader isr = new InputStreamReader(he.getRequestBody(), StandardCharsets.UTF_8);
+        BufferedReader br = new BufferedReader(isr);
+        String payload = br.readLine();
+        //HashMap<String, String> queryData = parseQuery(query);
+
+        System.out.println("payload: " + payload);
+
+        JSONObject jo;
+        try {
+            jo = (JSONObject) new JSONParser().parse(payload);
+
+
+        } catch (ParseException e) {
+            System.out.println("Parse failed");
+            throw new RuntimeException(e);
+        };
+        // send response
+        String response;
+        response = jo.toString();
+        response = "";
+        for (Object key : jo.keySet()) {
+            response += key + ":" + jo.get(key) + ",";
+        }
+        response += "\n";
+        System.out.println("response:" + response);
+        he.sendResponseHeaders(200, response.length());
+
+        OutputStream os = he.getResponseBody();
+        os.write(response.getBytes());
+        os.close();
+    }
+}
+
+==> ./src/WebServer/PlayARoundHandler.java <==
+package WebServer;
+
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import Game.Game;
+
+public class PlayARoundHandler implements HttpHandler
+{
+    @Override
+    public void handle(HttpExchange he) throws IOException
+    {
+        // parse request
+        InputStreamReader isr = new InputStreamReader(he.getRequestBody(), StandardCharsets.UTF_8);
+        BufferedReader br = new BufferedReader(isr);
+        String payload = br.readLine();
+        //HashMap<String, String> queryData = parseQuery(query);
+
+        System.out.println("payload: " + payload);
+
+        JSONObject jo;
+        try {
+            jo = (JSONObject) new JSONParser().parse(payload);
+
+
+        } catch (ParseException e) {
+            System.out.println("Parse failed");
+            throw new RuntimeException(e);
+        };
+        // send response
+        String response;
+        response = "empty";
+
+        response += (Game.currentRound);
+
+        response += "\n";
+        System.out.println("response:" + response);
+        he.sendResponseHeaders(200, response.length());
+
+        OutputStream os = he.getResponseBody();
+        os.write(response.getBytes());
+        os.close();
+
+        System.out.println("selection: " + jo.get("selection") + " to string " + jo.get("selection").toString() );
+
+        Game.PlayARound(Integer.parseInt(jo.get("selection").toString()));
+        System.out.println();
+        Game.CheckAndResetIsUsedFlags();
+        int gameStatus = Game.CheckGameStatus(Game.currentRound);
+
+
+        Game.WriteToLogFile();
+
+
+    }
+}
+
+==> ./src/WebServer/InitializeGame.java <==
+package WebServer;
+
+import Game.Game;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.lang.reflect.Array;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.HashMap;
+
+import static WebServer.RootHandler.parseQuery;
+
+public class InitializeGame implements HttpHandler
+{
+    @Override
+    public void handle(HttpExchange he) throws IOException
+    {
+        // parse request
+        InputStreamReader isr = new InputStreamReader(he.getRequestBody(), StandardCharsets.UTF_8);
+        BufferedReader br = new BufferedReader(isr);
+        String payload = br.readLine();
+        //HashMap<String, String> queryData = parseQuery(query);
+
+        System.out.println("payload: " + payload);
+
+        JSONObject jo;
+        try {
+            jo = (JSONObject) new JSONParser().parse(payload);
+
+
+        } catch (ParseException e) {
+            System.out.println("Parse failed");
+            throw new RuntimeException(e);
+        };
+
+        System.out.println(jo.toString());
+        System.out.println(jo.keySet());
+        System.out.println(jo.get("deck"));
+
+        String[] deckString = jo.get("deck").toString().replace("[", "").replace("]", "").split(",");
+        System.out.println("DeckString: " + Arrays.toString(deckString));
+        int[] deck = new int[5];
+        for (int i=0;i<deckString.length;i++) {
+
+            deck[i] = Integer.parseInt(deckString[i]);
+            System.out.println("Converted " + i);
+        }
+        System.out.println("deck:" + Arrays.toString(deck));
+        String response = "";
+        response += Arrays.toString(deck);
+        // send response
+        /*
+        String response = "Starting ";
+        System.out.println(Boolean.parseBoolean(queryData.get("human")));
+        if () {
+            response += "Human";
+        }
+        else {
+            response += "AI";
+        }
+
+        response += "-AI Game.\n";
+         */
+
+        he.sendResponseHeaders(200, response.length());
+        OutputStream os = he.getResponseBody();
+        os.write(response.getBytes());
+
+        os.close();
+
+
+        int[] someDeck = { 0, 1, 2, 0, 1 };
+
+        //System.out.println("query: " + query);
+        Game.InitializeGame(deck);
+        Game.InitializeLogFile();
+
+        //Game.InitializeGame(Boolean.parseBoolean(queryData.get("human")));
+
+    }
+}
+==> ./src/WebServer/RootHandler.java <==
+package WebServer;
+
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.HashMap;
+
+public class RootHandler implements HttpHandler
+{
+    public static HashMap<String, String> parseQuery(String query)
+    {
+        String[] queryPairs = query.split("&");
+        HashMap<String, String> queryData = new HashMap<>();
+
+        for (String pair : queryPairs)
+            queryData.put(pair.split("=")[0], pair.split("=")[1]);
+
+        return queryData;
+    }
+
+    @Override
+    public void handle(HttpExchange he) throws IOException
+    {
+        String response = "<h1>Server start success " +
+        "if you see this message </h1 > " + " Merhaba Nusret ";
+
+        he.sendResponseHeaders(200, response.length());
+
+        OutputStream os = he.getResponseBody();
+        os.write(response.getBytes());
+        os.close();
+    }
+}
+==> ./src/WebServer/GetHandler.java <==
+package WebServer;
+
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URI;
+import java.util.HashMap;
+
+import static WebServer.RootHandler.parseQuery;
+public class GetHandler implements HttpHandler
+{
+    @Override
+    public void handle(HttpExchange he) throws IOException
+    {
+        // parse request
+        URI requestedUri = he.getRequestURI();
+        String query = requestedUri.getRawQuery();
+        HashMap<String, String> queryData = parseQuery(query);
+
+        // send response
+        String response = "";
+        for (String key : queryData.keySet())
+            response += key + " = " + queryData.get(key) + "\n";
+
+        he.sendResponseHeaders(200, response.length());
+        OutputStream os = he.getResponseBody();
+        os.write(response.getBytes());
+
+        os.close();
+
+        System.out.println("query: " + query);
+    }
+}
+==> ./src/GameObjects/Player.java <==
+package GameObjects;
+
+import java.util.ArrayList;
+import java.util.Random;
+import Game.*;
+
+public abstract class Player
+{
+    public class DeckItem
+    {
+        public GameObject object;
+        public boolean isUsed;
+        public long id;
+
+        DeckItem(GameObject startItem, long startID)
+        {
+            this.object = startItem;
+            this.isUsed = false;
+            this.id = startID;
+        }
+
+        public String ShowStats()
+        {
+            String text = "";
+
+            System.out.println("-----------------------------------------------------------------");
+            System.out.println("Item's ID: " + this.id);
+            System.out.println("Is item used: " + this.isUsed);
+
+            text += "-----------------------------------------------------------------\n";
+            text += "Item's ID: " + this.id + "\n";
+            text += "Is item used: " + this.isUsed + "\n";
+            text += this.object.ShowObjectStats();
+
+            System.out.println("-----------------------------------------------------------------");
+            text += "-----------------------------------------------------------------\n";
+
+            return text;
+        }
+    }
+
+    private long playerID;
+    private String playerName;
+    private double score;
+
+    public ArrayList<DeckItem> deck = new ArrayList<>();
+    final Random rng = new Random();
+
+    public Player()
+    {
+        do
+        {
+            this.playerID = this.rng.nextLong();
+        } while(this.playerID < 0);
+
+        this.playerName = "Player";
+        this.score = 0.0;
+        //InitializeDeck();
+    }
+
+    public Player(long id, String name)
+    {
+        this.playerID = id;
+        this.playerName = name;
+        this.score = 0.0;
+        //InitializeDeck();
+    }
+
+    public Player(long id, String name, double startScore)
+    {
+        this.playerID = id;
+        this.playerName = name;
+        this.score = startScore;
+        //InitializeDeck();
+    }
+
+    public void SetPlayerID(long newID)
+    {
+        this.playerID = newID;
+    }
+
+    public void SetPlayerName(String newName)
+    {
+        this.playerName = newName;
+    }
+
+    public void SetPlayerScore(double newScore)
+    {
+        this.score = newScore;
+    }
+
+    public long GetPlayerID()
+    {
+        return this.playerID;
+    }
+
+    public String GetPlayerName()
+    {
+        return this.playerName;
+    }
+
+    public double GetPlayerScore()
+    {
+        UpdatePlayerScore();
+        return this.score;
+    }
+
+    public void UpdatePlayerScore()
+    {
+        double newScore = 0.0;
+        for(DeckItem i : this.GetItemDeck())
+            newScore += i.object.GetDurability();
+
+        this.SetPlayerScore(newScore);
+    }
+
+    public void InitializeDeck()
+    {
+        for(long i = 0; i < 5; i++)
+        {
+            switch (this.rng.nextInt(3))
+            {
+                case 0 -> this.deck.add(new DeckItem(new Rock(Game.startDurability, Game.startLevelPoint, Game.startRockHardness), i));
+                case 1 -> this.deck.add(new DeckItem(new Paper(Game.startDurability, Game.startLevelPoint, Game.startPaperInfluence), i));
+                case 2 -> this.deck.add(new DeckItem(new Scissor(Game.startDurability, Game.startLevelPoint, Game.startScissorSharpness), i));
+            }
+        }
+    }
+
+    public void InitializeDeck(int[] startingDeck)
+    {
+        for(int i = 0; i < startingDeck.length; i++)
+        {
+            switch (startingDeck[i])
+            {
+                case 0 -> this.deck.add(new DeckItem(new Rock(Game.startDurability, Game.startLevelPoint, Game.startRockHardness), i));
+                case 1 -> this.deck.add(new DeckItem(new Paper(Game.startDurability, Game.startLevelPoint, Game.startPaperInfluence), i));
+                case 2 -> this.deck.add(new DeckItem(new Scissor(Game.startDurability, Game.startLevelPoint, Game.startScissorSharpness), i));
+            }
+        }
+    }
+
+    public ArrayList<DeckItem> GetItemDeck()
+    {
+        return this.deck;
+    }
+
+    public abstract void RemoveItem(DeckItem disqualified);
+
+    public abstract void UpgradeItem(DeckItem obsolete);
+
+    public abstract void UpdateItem(DeckItem upToDate);
+
+    public abstract String ShowScore();
+
+    public abstract DeckItem SelectItem(int selection);
+}
+
+==> ./src/GameObjects/HeavyRock.java <==
+package GameObjects;
+
+public class HeavyRock extends Rock
+{
+    private double heat;
+
+    public HeavyRock()
+    {
+        super.SetDurability(20.0);
+        super.SetLevelPoint(0.0);
+        super.SetHardness(2.0);
+        super.SetType(GameObjectType.HeavyRock);
+        this.heat = 2.0;
+    }
+
+    public HeavyRock(double startDurability, double startLevelPoint)
+    {
+        super.SetDurability(startDurability);
+        super.SetLevelPoint(startLevelPoint);
+        super.SetHardness(2.0);
+        super.SetType(GameObjectType.HeavyRock);
+        this.heat = 2.0;
+    }
+
+    public HeavyRock(double startDurability, double startLevelPoint, double startHardness, double startHeat)
+    {
+        super.SetDurability(startDurability);
+        super.SetLevelPoint(startLevelPoint);
+        super.SetHardness(startHardness);
+        super.SetType(GameObjectType.HeavyRock);
+        this.heat = startHeat;
+    }
+
+    public void SetHeat(double newHeat)
+    {
+        this.heat = newHeat;
+    }
+
+    public double GetHeat()
+    {
+        return this.heat;
+    }
+
+    @Override
+    public String ShowObjectStats()
+    {
+        System.out.println("Type: HEAVY ROCK");
+        System.out.println("Durability: " + super.GetDurability());
+        System.out.println("Level point: " + super.GetLevelPoint());
+        System.out.println("Hardness: " + super.GetHardness());
+        System.out.println("Heat: " + this.heat);
+
+        return "Type: HEAVY ROCK\n" +
+               "Durability: " + super.GetDurability() + "\n" +
+               "Level point: " + super.GetLevelPoint() + "\n" +
+               "Hardness: " + super.GetHardness() + "\n" +
+               "Heat: " + this.heat + "\n";
+    }
+
+    @Override
+    public double CalculateAttackValue(Rock enemyRock)
+    {
+        // Dökümanda aynı tip nesnelerin birbirlerine karşı etkilerinin hesaplanmasına dair bir formül yer almaması nedeniyle
+        // dökümandaki formüller esas alınmak suretiyle en gerçekçi formül oluşturulmaya çalışılmıştır.
+        return (super.GetHardness() * this.heat) / enemyRock.GetHardness();
+    }
+
+    @Override
+    public double CalculateAttackValue(Paper enemyPaper)
+    {
+        return (super.GetHardness() * this.heat) / ((1.0 - super.GetConstantA()) * enemyPaper.GetInfluence());
+    }
+
+    @Override
+    public double CalculateAttackValue(Scissor enemyScissor)
+    {
+        return (super.GetHardness() * this.heat) / (super.GetConstantA() * enemyScissor.GetSharpness());
+    }
+
+    @Override
+    public double CalculateAttackValue(HeavyRock enemyHeavyRock)
+    {
+        // Dökümanda aynı tip nesnelerin birbirlerine karşı etkilerinin hesaplanmasına dair bir formül yer almaması nedeniyle
+        // dökümandaki formüller esas alınmak suretiyle en gerçekçi formül oluşturulmaya çalışılmıştır.
+        return (super.GetHardness() * this.heat) / (enemyHeavyRock.GetHardness() * enemyHeavyRock.GetHeat());
+    }
+
+    @Override
+    public double CalculateAttackValue(SpecialPaper enemySpecialPaper)
+    {
+        return (super.GetHardness() * this.heat) / ((1.0 - super.GetConstantA()) * enemySpecialPaper.GetInfluence() * enemySpecialPaper.GetThickness());
+    }
+
+    @Override
+    public double CalculateAttackValue(MasterScissor enemyMasterScissor)
+    {
+        return (super.GetHardness() * this.heat) / (super.GetConstantA() * enemyMasterScissor.GetSharpness() * enemyMasterScissor.GetSpeed());
+    }
+
+    @Override
+    public int UpdateStats(double addToDurability, double addToLevelPoint)
+    {
+        this.SetDurability(this.GetDurability() + addToDurability);
+        this.SetLevelPoint(this.GetLevelPoint() + addToLevelPoint);
+
+        if(this.GetDurability() <= 0.0)
+            return -1;
+
+        if(this.GetLevelPoint() > 30.0)
+            return 1;
+
+        return 0;
+    }
+}
+
+==> ./src/GameObjects/ComputerPlayer.java <==
+package GameObjects;
+
+import Game.Game;
+
+public class ComputerPlayer extends Player
+{
+    public ComputerPlayer()
+    {
+        do
+        {
+            super.SetPlayerID(this.rng.nextLong());
+        } while(super.GetPlayerID() < 0);
+
+        super.SetPlayerName("Computer");
+        super.SetPlayerScore(0);
+        super.InitializeDeck();
+    }
+
+    public ComputerPlayer(long ID, String name)
+    {
+        super.SetPlayerID(ID);
+        super.SetPlayerName(name);
+        super.SetPlayerScore(0);
+        super.InitializeDeck();
+    }
+
+    public ComputerPlayer(long ID, String name, long startScore)
+    {
+        super.SetPlayerID(ID);
+        super.SetPlayerName(name);
+        super.SetPlayerScore(startScore);
+        super.InitializeDeck();
+    }
+
+    @Override
+    public void RemoveItem(DeckItem disqualified)
+    {/*
+        for(DeckItem i : super.deck)
+        {
+            if(disqualified.id == i.id)
+            {
+                super.deck.remove(i);
+                break;
+            }
+        }*/
+        super.deck.remove(disqualified);
+    }
+
+    @Override
+    public void UpgradeItem(DeckItem obsolete)
+    {
+        DeckItem toAdded;
+
+        switch(obsolete.object.GetType())
+        {
+            case Paper -> toAdded = new DeckItem(new SpecialPaper(obsolete.object.GetDurability(),
+                                                                  obsolete.object.GetLevelPoint(),
+                                                                  Game.startPaperInfluence,
+                                                                  Game.startSpecialPaperThickness), obsolete.id);
+
+            case Scissor -> toAdded = new DeckItem(new MasterScissor(obsolete.object.GetDurability(),
+                                                                     obsolete.object.GetLevelPoint(),
+                                                                     Game.startScissorSharpness,
+                                                                     Game.startMasterScissorSpeed), obsolete.id);
+
+            default -> toAdded = new DeckItem(new HeavyRock(obsolete.object.GetDurability(),
+                                                            obsolete.object.GetLevelPoint(),
+                                                            Game.startRockHardness,
+                                                            Game.startHeavyRockHeat), obsolete.id);
+        }
+
+        toAdded.isUsed = obsolete.isUsed;
+
+        for(DeckItem i : super.deck)
+        {
+            if(obsolete.id == i.id)
+            {
+                super.deck.set(super.deck.indexOf(i), toAdded);
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void UpdateItem(DeckItem upToDate)
+    {
+        for(DeckItem i : super.deck)
+        {
+            if(upToDate.id == i.id)
+            {
+                super.deck.set(super.deck.indexOf(i), upToDate);
+                break;
+            }
+        }
+    }
+
+    @Override
+    public String ShowScore()
+    {
+        super.UpdatePlayerScore();
+
+        System.out.println("=================================================================");
+        System.out.println("Player ID: " + super.GetPlayerID());
+        System.out.println("Player's Name: " + super.GetPlayerName());
+        System.out.println("Player's Score: " + super.GetPlayerScore());
+        System.out.println("=================================================================");
+
+        return "=================================================================\n" +
+               "Player ID: " + super.GetPlayerID() + "\n" +
+               "Player's Name: " + super.GetPlayerName() + "\n" +
+               "Player's Score: " + super.GetPlayerScore() + "\n" +
+               "=================================================================\n";
+    }
+
+    @Override
+    public DeckItem SelectItem(int selection)
+    {
+        do
+        {
+            selection = super.rng.nextInt(super.deck.size());
+        } while(super.deck.get(selection).isUsed || super.deck.get(selection).object.GetDurability() <= 0.0);
+
+        return super.deck.get(selection);
+    }
+}
+
+==> ./src/GameObjects/Scissor.java <==
+package GameObjects;
+
+public class Scissor extends GameObject
+{
+    private double sharpness;
+
+    public Scissor()
+    {
+        super.SetDurability(20.0);
+        super.SetLevelPoint(0.0);
+        super.SetType(GameObjectType.Scissor);
+        this.sharpness = 2.0;
+    }
+
+    public Scissor(double startDurability, double startLevelPoint)
+    {
+        super.SetDurability(startDurability);
+        super.SetLevelPoint(startLevelPoint);
+        super.SetType(GameObjectType.Scissor);
+        this.sharpness = 2.0;
+    }
+
+    public Scissor(double startDurability, double startLevelPoint, double startSharpness)
+    {
+        super.SetDurability(startDurability);
+        super.SetLevelPoint(startLevelPoint);
+        super.SetType(GameObjectType.Scissor);
+        this.sharpness = startSharpness;
+    }
+
+    public void SetSharpness(double newSharpness)
+    {
+        this.sharpness = newSharpness;
+    }
+
+    public double GetSharpness()
+    {
+        return this.sharpness;
+    }
+
+    @Override
+    public String ShowObjectStats()
+    {
+        System.out.println("Type: SCISSOR");
+        System.out.println("Durability: " + super.GetDurability());
+        System.out.println("Level point: " + super.GetLevelPoint());
+        System.out.println("Sharpness: " + this.sharpness);
+
+        return "Type: SCISSOR\n" +
+               "Durability: " + super.GetDurability() + "\n" +
+               "Level point: " + super.GetLevelPoint() + "\n" +
+               "Sharpness: " + this.sharpness + "\n";
+    }
+
+    @Override
+    public double CalculateAttackValue(Rock enemyRock)
+    {
+        return this.sharpness / ((1.0 - super.GetConstantA()) * enemyRock.GetHardness());
+    }
+
+    @Override
+    public double CalculateAttackValue(Paper enemyPaper)
+    {
+        return this.sharpness / (super.GetConstantA() * enemyPaper.GetInfluence());
+    }
+
+    @Override
+    public double CalculateAttackValue(Scissor enemyScissor)
+    {
+        // Dökümanda aynı tip nesnelerin birbirlerine karşı etkilerinin hesaplanmasına dair bir formül yer almaması nedeniyle
+        // dökümandaki formüller esas alınmak suretiyle en gerçekçi formül oluşturulmaya çalışılmıştır.
+        return this.sharpness / enemyScissor.GetSharpness();
+    }
+
+    @Override
+    public double CalculateAttackValue(HeavyRock enemyHeavyRock)
+    {
+        return this.sharpness / ((1.0 - super.GetConstantA()) * enemyHeavyRock.GetHardness() * enemyHeavyRock.GetHeat());
+    }
+
+    @Override
+    public double CalculateAttackValue(SpecialPaper enemySpecialPaper)
+    {
+        return this.sharpness / (super.GetConstantA() * enemySpecialPaper.GetInfluence() * enemySpecialPaper.GetThickness());
+    }
+
+    @Override
+    public double CalculateAttackValue(MasterScissor enemyMasterScissor)
+    {
+        // Dökümanda aynı tip nesnelerin birbirlerine karşı etkilerinin hesaplanmasına dair bir formül yer almaması nedeniyle
+        // dökümandaki formüller esas alınmak suretiyle en gerçekçi formül oluşturulmaya çalışılmıştır.
+        return this.sharpness / (enemyMasterScissor.GetSharpness() * enemyMasterScissor.GetSpeed());
+    }
+
+    @Override
+    public int UpdateStats(double addToDurability, double addToLevelPoint)
+    {
+        this.SetDurability(this.GetDurability() + addToDurability);
+        this.SetLevelPoint(this.GetLevelPoint() + addToLevelPoint);
+
+        if(this.GetDurability() <= 0.0)
+            return -1;
+
+        if(this.GetLevelPoint() > 30.0)
+            return 1;
+
+        return 0;
+    }
+}
+
+==> ./src/GameObjects/MasterScissor.java <==
+package GameObjects;
+
+public class MasterScissor extends Scissor
+{
+    private double speed;
+
+    public MasterScissor()
+    {
+        super.SetDurability(20.0);
+        super.SetLevelPoint(0.0);
+        super.SetSharpness(2.0);
+        super.SetType(GameObjectType.MasterScissor);
+        this.speed = 2.0;
+    }
+
+    public MasterScissor(double startDurability, double startLevelPoint)
+    {
+        super.SetDurability(startDurability);
+        super.SetLevelPoint(startLevelPoint);
+        super.SetSharpness(2.0);
+        super.SetType(GameObjectType.MasterScissor);
+        this.speed = 2.0;
+    }
+
+    public MasterScissor(double startDurability, double startLevelPoint, double startSharpness, double startSpeed)
+    {
+        super.SetDurability(startDurability);
+        super.SetLevelPoint(startLevelPoint);
+        super.SetSharpness(startSharpness);
+        super.SetType(GameObjectType.MasterScissor);
+        this.speed = startSpeed;
+    }
+
+    public void SetSpeed(double newSpeed)
+    {
+        this.speed = newSpeed;
+    }
+
+    public double GetSpeed()
+    {
+        return this.speed;
+    }
+
+    @Override
+    public String ShowObjectStats()
+    {
+        System.out.println("Type: MASTER SCISSOR");
+        System.out.println("Durability: " + super.GetDurability());
+        System.out.println("Level point: " + super.GetLevelPoint());
+        System.out.println("Sharpness: " + super.GetSharpness());
+        System.out.println("Speed: " + this.speed);
+
+        return "Type: MASTER SCISSOR\n" +
+               "Durability: " + super.GetDurability() + "\n" +
+               "Level point: " + super.GetLevelPoint() + "\n" +
+               "Sharpness: " + super.GetSharpness() + "\n" +
+               "Speed: " + this.speed + "\n";
+    }
+
+    @Override
+    public double CalculateAttackValue(Rock enemyRock)
+    {
+        return (super.GetSharpness() * this.speed) / ((1.0 - super.GetConstantA()) * enemyRock.GetHardness());
+    }
+
+    @Override
+    public double CalculateAttackValue(Paper enemyPaper)
+    {
+        return (super.GetSharpness() * this.speed) / (super.GetConstantA() * enemyPaper.GetInfluence());
+    }
+
+    @Override
+    public double CalculateAttackValue(Scissor enemyScissor)
+    {
+        // Dökümanda aynı tip nesnelerin birbirlerine karşı etkilerinin hesaplanmasına dair bir formül yer almaması nedeniyle
+        // dökümandaki formüller esas alınmak suretiyle en gerçekçi formül oluşturulmaya çalışılmıştır.
+        return (super.GetSharpness() * this.speed) / enemyScissor.GetSharpness();
+    }
+
+    @Override
+    public double CalculateAttackValue(HeavyRock enemyHeavyRock)
+    {
+        return (super.GetSharpness() * this.speed) / ((1.0 - super.GetConstantA()) * enemyHeavyRock.GetHardness() * enemyHeavyRock.GetHeat());
+    }
+
+    @Override
+    public double CalculateAttackValue(SpecialPaper enemySpecialPaper)
+    {
+        return (super.GetSharpness() * this.speed) / (super.GetConstantA() * enemySpecialPaper.GetInfluence() * enemySpecialPaper.GetThickness());
+    }
+
+    @Override
+    public double CalculateAttackValue(MasterScissor enemyMasterScissor)
+    {
+        // Dökümanda aynı tip nesnelerin birbirlerine karşı etkilerinin hesaplanmasına dair bir formül yer almaması nedeniyle
+        // dökümandaki formüller esas alınmak suretiyle en gerçekçi formül oluşturulmaya çalışılmıştır.
+        return (super.GetSharpness() * this.speed) / (enemyMasterScissor.GetSharpness() * enemyMasterScissor.GetSpeed());
+    }
+
+    @Override
+    public int UpdateStats(double addToDurability, double addToLevelPoint)
+    {
+        this.SetDurability(this.GetDurability() + addToDurability);
+        this.SetLevelPoint(this.GetLevelPoint() + addToLevelPoint);
+
+        if(this.GetDurability() <= 0.0)
+            return -1;
+
+        if(this.GetLevelPoint() > 30.0)
+            return 1;
+
+        return 0;
+    }
+}
+
+==> ./src/GameObjects/Rock.java <==
+package GameObjects;
+
+public class Rock extends GameObject
+{
+    private double hardness;
+
+    public Rock()
+    {
+        super.SetDurability(20);
+        super.SetLevelPoint(0);
+        super.SetType(GameObjectType.Rock);
+        this.hardness = 2.0;
+    }
+
+    public Rock(double startDurability, double startLevelPoint)
+    {
+        super.SetDurability(startDurability);
+        super.SetLevelPoint(startLevelPoint);
+        super.SetType(GameObjectType.Rock);
+        this.hardness = 2.0;
+    }
+
+    public Rock(double startDurability, double startLevelPoint, double startHardness)
+    {
+        super.SetDurability(startDurability);
+        super.SetLevelPoint(startLevelPoint);
+        super.SetType(GameObjectType.Rock);
+        this.hardness = startHardness;
+    }
+
+    public void SetHardness(double newHardness)
+    {
+        this.hardness = newHardness;
+    }
+
+    public double GetHardness()
+    {
+        return this.hardness;
+    }
+
+    @Override
+    public String ShowObjectStats()
+    {
+        System.out.println("Type: ROCK");
+        System.out.println("Durability: " + super.GetDurability());
+        System.out.println("Level point: " + super.GetLevelPoint());
+        System.out.println("Hardness: " + this.hardness);
+
+        return "Type: ROCK\n" +
+               "Durability: " + super.GetDurability() + "\n" +
+               "Level point: " + super.GetLevelPoint() + "\n" +
+               "Hardness: " + this.hardness + "\n";
+    }
+
+    @Override
+    public double CalculateAttackValue(Rock enemyRock)
+    {
+        // Dökümanda aynı tip nesnelerin birbirlerine karşı etkilerinin hesaplanmasına dair bir formül yer almaması nedeniyle
+        // dökümandaki formüller esas alınmak suretiyle en gerçekçi formül oluşturulmaya çalışılmıştır.
+        return this.hardness / enemyRock.GetHardness();
+    }
+
+    @Override
+    public double CalculateAttackValue(Paper enemyPaper)
+    {
+        return this.hardness / ((1.0 - super.GetConstantA()) * enemyPaper.GetInfluence());
+    }
+
+    @Override
+    public double CalculateAttackValue(Scissor enemyScissor)
+    {
+        return this.hardness / (super.GetConstantA() * enemyScissor.GetSharpness());
+    }
+
+    @Override
+    public double CalculateAttackValue(HeavyRock enemyHeavyRock)
+    {
+        // Dökümanda aynı tip nesnelerin birbirlerine karşı etkilerinin hesaplanmasına dair bir formül yer almaması nedeniyle
+        // dökümandaki formüller esas alınmak suretiyle en gerçekçi formül oluşturulmaya çalışılmıştır.
+        return this.hardness / (enemyHeavyRock.GetHardness() * enemyHeavyRock.GetHeat());
+    }
+
+    @Override
+    public double CalculateAttackValue(SpecialPaper enemySpecialPaper)
+    {
+        return this.hardness / ((1.0 - super.GetConstantA()) * enemySpecialPaper.GetInfluence() * enemySpecialPaper.GetThickness());
+    }
+
+    @Override
+    public double CalculateAttackValue(MasterScissor enemyMasterScissor)
+    {
+        return this.hardness / (super.GetConstantA() * enemyMasterScissor.GetSharpness() * enemyMasterScissor.GetSpeed());
+    }
+
+    @Override
+    public int UpdateStats(double addToDurability, double addToLevelPoint)
+    {
+        this.SetDurability(this.GetDurability() + addToDurability);
+        this.SetLevelPoint(this.GetLevelPoint() + addToLevelPoint);
+
+        if(this.GetDurability() <= 0.0)
+            return -1;
+
+        if(this.GetLevelPoint() > 30.0)
+            return 1;
+
+        return 0;
+    }
+}
+
+==> ./src/GameObjects/GameObject.java <==
+package GameObjects;
+
+public abstract class GameObject
+{
+    public enum GameObjectType
+    {
+        Rock,
+        Paper,
+        Scissor,
+        HeavyRock,
+        SpecialPaper,
+        MasterScissor
+    }
+
+    private GameObjectType type;
+    private double durability;
+    private double levelPoint;
+    private double a = 0.2;
+
+    public GameObject()
+    {
+        // Dökümanda belirtilen varsayılan değerler
+        this.durability = 20.0;
+        this.levelPoint = 0.0;
+    }
+
+    public GameObject(double startDurability, double startLevelPoint)
+    {
+        this.durability = startDurability;
+        this.levelPoint = startLevelPoint;
+    }
+
+    public void SetDurability(double newDurability)
+    {
+        this.durability = newDurability;
+    }
+
+    public void SetLevelPoint(double newLevelPoint)
+    {
+        this.levelPoint = newLevelPoint;
+    }
+
+    public void SetType(GameObjectType newType)
+    {
+        this.type = newType;
+    }
+
+    public double GetDurability()
+    {
+        return this.durability;
+    }
+
+    public double GetLevelPoint()
+    {
+        return this.levelPoint;
+    }
+
+    public GameObjectType GetType()
+    {
+        return this.type;
+    }
+
+    public double GetConstantA()
+    {
+        return a;
+    }
+
+    public void SetConstantA(double newA)
+    {
+        a = newA;
+    }
+
+    public abstract String ShowObjectStats();
+
+    public abstract double CalculateAttackValue(Rock enemyRock);
+
+    public abstract double CalculateAttackValue(Paper enemyPaper);
+
+    public abstract double CalculateAttackValue(Scissor enemyScissor);
+
+    public abstract double CalculateAttackValue(HeavyRock enemyHeavyRock);
+
+    public abstract double CalculateAttackValue(SpecialPaper enemySpecialPaper);
+
+    public abstract double CalculateAttackValue(MasterScissor enemyMasterScissor);
+
+    public abstract int UpdateStats(double addToDurability, double addToLevelPoint);
+}
+
+==> ./src/GameObjects/HumanPlayer.java <==
+package GameObjects;
+
+import Game.Game;
+
+public class HumanPlayer extends Player
+{
+    public HumanPlayer()
+    {
+        do
+        {
+            super.SetPlayerID(this.rng.nextLong());
+        } while(super.GetPlayerID() < 0);
+
+        super.SetPlayerName("Human");
+        super.SetPlayerScore(0);
+        super.InitializeDeck();
+    }
+
+    public HumanPlayer(long ID, String name)
+    {
+        super.SetPlayerID(ID);
+        super.SetPlayerName(name);
+        super.SetPlayerScore(0);
+        super.InitializeDeck();
+    }
+
+    public HumanPlayer(long ID, String name, int[] startingDeck)
+    {
+        super.SetPlayerID(ID);
+        super.SetPlayerName(name);
+        super.SetPlayerScore(0);
+        super.InitializeDeck(startingDeck);
+    }
+
+    public HumanPlayer(long ID, String name, int[] startingDeck, long startScore)
+    {
+        super.SetPlayerID(ID);
+        super.SetPlayerName(name);
+        super.SetPlayerScore(startScore);
+        super.InitializeDeck(startingDeck);
+    }
+
+    @Override
+    public void RemoveItem(DeckItem disqualified)
+    {
+        for(DeckItem i : super.deck)
+        {
+            if(disqualified.id == i.id)
+            {
+                super.deck.remove(i);
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void UpgradeItem(DeckItem obsolete)
+    {
+        DeckItem toAdded;
+
+        switch(obsolete.object.GetType())
+        {
+            case Paper -> toAdded = new DeckItem(new SpecialPaper(obsolete.object.GetDurability(),
+                    obsolete.object.GetLevelPoint(),
+                    Game.startPaperInfluence,
+                    Game.startSpecialPaperThickness), obsolete.id);
+
+            case Scissor -> toAdded = new DeckItem(new MasterScissor(obsolete.object.GetDurability(),
+                    obsolete.object.GetLevelPoint(),
+                    Game.startScissorSharpness,
+                    Game.startMasterScissorSpeed), obsolete.id);
+
+            default -> toAdded = new DeckItem(new HeavyRock(obsolete.object.GetDurability(),
+                    obsolete.object.GetLevelPoint(),
+                    Game.startRockHardness,
+                    Game.startHeavyRockHeat), obsolete.id);
+        }
+
+        toAdded.isUsed = obsolete.isUsed;
+
+        for(DeckItem i : super.deck)
+        {
+            if(obsolete.id == i.id)
+            {
+                super.deck.set(super.deck.indexOf(i), toAdded);
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void UpdateItem(DeckItem upToDate)
+    {
+        for(DeckItem i : super.deck)
+        {
+            if(upToDate.id == i.id)
+            {
+                super.deck.set(super.deck.indexOf(i), upToDate);
+                break;
+            }
+        }
+    }
+
+    @Override
+    public String ShowScore()
+    {
+        super.UpdatePlayerScore();
+
+        System.out.println("=================================================================");
+        System.out.println("Player ID: " + super.GetPlayerID());
+        System.out.println("Player's Name: " + super.GetPlayerName());
+        System.out.println("Player's Score: " + super.GetPlayerScore());
+        System.out.println("=================================================================");
+
+        return "=================================================================\n" +
+                "Player ID: " + super.GetPlayerID() + "\n" +
+                "Player's Name: " + super.GetPlayerName() + "\n" +
+                "Player's Score: " + super.GetPlayerScore() + "\n" +
+                "=================================================================\n";
+    }
+
+    @Override
+    public DeckItem SelectItem(int selection)
+    {
+        //return (selection < 0 || selection >= super.deck.size()) ? null : super.deck.get(selection);
+
+        for(DeckItem i : deck)
+        {
+            if(selection == i.id)
+                return i;
+        }
+
+        return null;
+    }
+}
+
+==> ./src/GameObjects/Paper.java <==
+package GameObjects;
+
+public class Paper extends GameObject
+{
+    private double influence;
+
+    public Paper()
+    {
+        super.SetDurability(20.0);
+        super.SetLevelPoint(0.0);
+        super.SetType(GameObjectType.Paper);
+        this.influence = 2.0;
+    }
+
+    public Paper(double startDurability, double startLevelPoint)
+    {
+        super.SetDurability(startDurability);
+        super.SetLevelPoint(startLevelPoint);
+        super.SetType(GameObjectType.Paper);
+        this.influence = 2.0;
+    }
+
+    public Paper(double startDurability, double startLevelPoint, double startInfluence)
+    {
+        super.SetDurability(startDurability);
+        super.SetLevelPoint(startLevelPoint);
+        super.SetType(GameObjectType.Paper);
+        this.influence = startInfluence;
+    }
+
+    public void SetInfluence(double newInfluence)
+    {
+        this.influence = newInfluence;
+    }
+
+    public double GetInfluence()
+    {
+        return this.influence;
+    }
+
+    @Override
+    public String ShowObjectStats()
+    {
+        System.out.println("Type: PAPER");
+        System.out.println("Durability: " + super.GetDurability());
+        System.out.println("Level point: " + super.GetLevelPoint());
+        System.out.println("Influence: " + this.influence);
+
+        return "Type: PAPER\n" +
+               "Durability: " + super.GetDurability() + "\n" +
+               "Level point: " + super.GetLevelPoint() + "\n" +
+               "Influence: " + this.influence + "\n";
+    }
+
+    @Override
+    public double CalculateAttackValue(Rock enemyRock)
+    {
+        return this.influence / (super.GetConstantA() * enemyRock.GetHardness());
+    }
+
+    @Override
+    public double CalculateAttackValue(Paper enemyPaper)
+    {
+        // Dökümanda aynı tip nesnelerin birbirlerine karşı etkilerinin hesaplanmasına dair bir formül yer almaması nedeniyle
+        // dökümandaki formüller esas alınmak suretiyle en gerçekçi formül oluşturulmaya çalışılmıştır.
+        return this.influence / enemyPaper.GetInfluence();
+    }
+
+    @Override
+    public double CalculateAttackValue(Scissor enemyScissor)
+    {
+        return this.influence / ((1.0 - super.GetConstantA()) * enemyScissor.GetSharpness());
+    }
+
+    @Override
+    public double CalculateAttackValue(HeavyRock enemyHeavyRock)
+    {
+        return this.influence / (super.GetConstantA() * enemyHeavyRock.GetHardness() * enemyHeavyRock.GetHeat());
+    }
+
+    @Override
+    public double CalculateAttackValue(SpecialPaper enemySpecialPaper)
+    {
+        // Dökümanda aynı tip nesnelerin birbirlerine karşı etkilerinin hesaplanmasına dair bir formül yer almaması nedeniyle
+        // dökümandaki formüller esas alınmak suretiyle en gerçekçi formül oluşturulmaya çalışılmıştır.
+        return this.influence / (enemySpecialPaper.GetInfluence() * enemySpecialPaper.GetThickness());
+    }
+
+    @Override
+    public double CalculateAttackValue(MasterScissor enemyMasterScissor)
+    {
+        return this.influence / ((1.0 - super.GetConstantA()) * enemyMasterScissor.GetSharpness() * enemyMasterScissor.GetSpeed());
+    }
+
+    @Override
+    public int UpdateStats(double addToDurability, double addToLevelPoint)
+    {
+        this.SetDurability(this.GetDurability() + addToDurability);
+        this.SetLevelPoint(this.GetLevelPoint() + addToLevelPoint);
+
+        if(this.GetDurability() <= 0.0)
+            return -1;
+
+        if(this.GetLevelPoint() > 30.0)
+            return 1;
+
+        return 0;
+    }
+}
+
+==> ./src/GameObjects/SpecialPaper.java <==
+package GameObjects;
+
+public class SpecialPaper extends Paper
+{
+    private double thickness;
+
+    public SpecialPaper()
+    {
+        super.SetDurability(20.0);
+        super.SetLevelPoint(0.0);
+        super.SetInfluence(2.0);
+        super.SetType(GameObjectType.SpecialPaper);
+        this.thickness = 2.0;
+    }
+
+    public SpecialPaper(double startDurability, double startLevelPoint)
+    {
+        super.SetDurability(startDurability);
+        super.SetLevelPoint(startLevelPoint);
+        super.SetInfluence(2.0);
+        super.SetType(GameObjectType.SpecialPaper);
+        this.thickness = 2.0;
+    }
+
+    public SpecialPaper(double startDurability, double startLevelPoint, double startInfluence, double startThickness)
+    {
+        super.SetDurability(startDurability);
+        super.SetLevelPoint(startLevelPoint);
+        super.SetInfluence(startInfluence);
+        super.SetType(GameObjectType.SpecialPaper);
+        this.thickness = startThickness;
+    }
+
+    public void SetThickness(double newThickness)
+    {
+        this.thickness = newThickness;
+    }
+
+    public double GetThickness()
+    {
+        return this.thickness;
+    }
+
+    @Override
+    public String ShowObjectStats()
+    {
+        System.out.println("Type: SPECIAL PAPER");
+        System.out.println("Durability: " + super.GetDurability());
+        System.out.println("Level point: " + super.GetLevelPoint());
+        System.out.println("Influence: " + super.GetInfluence());
+        System.out.println("Thickness: " + this.thickness);
+
+        return "Type: SPECIAL PAPER\n" +
+               "Durability: " + super.GetDurability() + "\n" +
+               "Level point: " + super.GetLevelPoint() + "\n" +
+               "Influence: " + super.GetInfluence() + "\n" +
+               "Thickness: " + this.thickness + "\n";
+    }
+
+    @Override
+    public double CalculateAttackValue(Rock enemyRock)
+    {
+        return (super.GetInfluence() * this.thickness) / (super.GetConstantA() * enemyRock.GetHardness());
+    }
+
+    @Override
+    public double CalculateAttackValue(Paper enemyPaper)
+    {
+        // Dökümanda aynı tip nesnelerin birbirlerine karşı etkilerinin hesaplanmasına dair bir formül yer almaması nedeniyle
+        // dökümandaki formüller esas alınmak suretiyle en gerçekçi formül oluşturulmaya çalışılmıştır.
+        return (super.GetInfluence() * this.thickness) / enemyPaper.GetInfluence();
+    }
+
+    @Override
+    public double CalculateAttackValue(Scissor enemyScissor)
+    {
+        return (super.GetInfluence() * this.thickness) / ((1.0 - super.GetConstantA()) * enemyScissor.GetSharpness());
+    }
+
+    @Override
+    public double CalculateAttackValue(HeavyRock enemyHeavyRock)
+    {
+        return (super.GetInfluence() * this.thickness) / (super.GetConstantA() * enemyHeavyRock.GetHardness() * enemyHeavyRock.GetHeat());
+    }
+
+    @Override
+    public double CalculateAttackValue(SpecialPaper enemySpecialPaper)
+    {
+        // Dökümanda aynı tip nesnelerin birbirlerine karşı etkilerinin hesaplanmasına dair bir formül yer almaması nedeniyle
+        // dökümandaki formüller esas alınmak suretiyle en gerçekçi formül oluşturulmaya çalışılmıştır.
+        return (super.GetInfluence() * this.thickness) / (enemySpecialPaper.GetInfluence() * enemySpecialPaper.GetThickness());
+    }
+
+    @Override
+    public double CalculateAttackValue(MasterScissor enemyMasterScissor)
+    {
+        return (super.GetInfluence() * this.thickness) / ((1.0 - super.GetConstantA()) * enemyMasterScissor.GetSharpness() * enemyMasterScissor.GetSpeed());
+    }
+
+    @Override
+    public int UpdateStats(double addToDurability, double addToLevelPoint)
+    {
+        this.SetDurability(this.GetDurability() + addToDurability);
+        this.SetLevelPoint(this.GetLevelPoint() + addToLevelPoint);
+
+        if(this.GetDurability() <= 0.0)
+            return -1;
+
+        if(this.GetLevelPoint() > 30.0)
+            return 1;
+
+        return 0;
+    }
+}
+
+==> ./src/Game/Game.java <==
+package Game;
+
+import WebServer.*;
+import GameObjects.*;
+import java.io.IOException;
+import java.util.Random;
+import java.util.Scanner;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.io.File;
+import java.io.FileWriter;
+import com.google.gson.*;
+
+public class Game
+{
+    public static boolean DEBUG = false;
+
+    public static Player player1, player2;
+    public static Player.DeckItem deckItem1, deckItem2;
+    public static int maxRound = 10;
+    public static boolean isHumanGame = false;
+    public static int gameStatus = 0;
+    public static int currentRound = 1;
+    static Random rng = new Random();
+    static String logText = "";
+    static File logFile = null;
+    static Scanner input = new Scanner(System.in);
+
+    public static int selectionOfHuman = 0;
+    public static double startDurability = 20.0, startLevelPoint = 0.0,
+                  startRockHardness = 2.0, startHeavyRockHeat = 2.0,
+                  startPaperInfluence = 2.0, startSpecialPaperThickness = 2.0,
+                  startScissorSharpness = 2.0, startMasterScissorSpeed = 2.0;
+
+    public static void main(String[] args) throws IOException
+    {
+        int port = 8080;
+
+        WebServer server = new WebServer();
+        server.Start(port);
+        //DEBUG=true;
+        if(DEBUG)
+        {
+            /*
+            int[] someDeck = { 0, 1, 2, 0, 1 };
+
+            InitializeGame();
+            InitializeLogFile();
+            HandleGameplay(100);
+            */
+
+        }
+    }
+
+    public static String GetGameInfo()
+    {
+        String jsonstring = "";
+        Gson gson = new Gson();
+
+        String player1itemdeck = "\"player1deck\":";
+        player1itemdeck += gson.toJson(player1.GetItemDeck());
+
+        String player2itemdeck = "\"player2deck\":";
+        player2itemdeck += gson.toJson(player2.GetItemDeck());
+
+        String[] gameinfo = {};
+
+
+        jsonstring = "{" + player1itemdeck + "," + player2itemdeck + "," + gson.toJson(gameinfo) + "}";
+        return jsonstring;
+    }
+
+    public static void HandleGameplay(int maxRound)
+    {
+        int i;
+        for(i = 0; i < maxRound; i++)
+        {
+            PlayARound(selectionOfHuman);
+            CheckAndResetIsUsedFlags();
+            gameStatus = CheckGameStatus(i);
+
+            if(gameStatus != 0)
+                break;
+
+            WriteToLogFile();
+        }
+
+        gameStatus = CheckGameStatus(i);
+        WriteToLogFile();
+    }
+
+    public static void CheckAndResetIsUsedFlags()
+    {
+        boolean resetIsUsedFlag = true;
+        for(Player.DeckItem item : player1.GetItemDeck())
+            resetIsUsedFlag &= item.isUsed;
+
+        if(resetIsUsedFlag)
+        {
+            for(Player.DeckItem item : player1.GetItemDeck())
+                item.isUsed = false;
+
+            System.out.println(player1.GetPlayerName() + " used all of his items!\n\n");
+            logText += player1.GetPlayerName() + " used all of his items!\n\n\n";
+        }
+        resetIsUsedFlag = true;
+        for(Player.DeckItem item : player2.GetItemDeck())
+            resetIsUsedFlag &= item.isUsed;
+
+        if(resetIsUsedFlag)
+        {
+            for(Player.DeckItem item : player2.GetItemDeck())
+                item.isUsed = false;
+
+            System.out.println(player2.GetPlayerName() + " used all of his items!\n\n");
+            logText += player2.GetPlayerName() + " used all of his items!\n\n\n";
+        }
+    }
+
+    // 0: Game still continues | 1: Player 1 won | 2: Player 2 won | 3: Draw
+    public static int CheckGameStatus(int currentRound)
+    {
+        if(currentRound < maxRound)
+        {
+            if(player1.GetItemDeck().size() > 0 && player2.GetItemDeck().size() == 0)
+            {
+                System.out.println(player1.GetPlayerName() + " won! Player's stats");
+
+                logText += player1.GetPlayerName() + " won! Player's stats\n";
+                logText += player1.ShowScore();
+                logText += player2.ShowScore();
+
+                return 1;
+            }
+            else if(player1.GetItemDeck().size() == 0 && player2.GetItemDeck().size() > 0)
+            {
+                System.out.println(player2.GetPlayerName() + " won! Player's stats");
+
+                logText += player2.GetPlayerName() + " won! Player's stats\n";
+                logText += player1.ShowScore();
+                logText += player2.ShowScore();
+
+                return 2;
+            }
+            else if(player1.GetItemDeck().size() == 0 && player2.GetItemDeck().size() == 0)
+            {
+                System.out.println("Draw! Player's stats");
+
+                logText += "Draw! Player's stats\n";
+                logText += player1.ShowScore();
+                logText += player2.ShowScore();
+
+                return 3;
+            }
+            else
+                return 0;
+        }
+        else
+        {
+            if(player1.GetPlayerScore() > player2.GetPlayerScore())
+            {
+                System.out.println(player1.GetPlayerName() + " won! Player's stats");
+
+                logText += player1.GetPlayerName() + " won! Player's stats\n";
+                logText += player1.ShowScore();
+                logText += player2.ShowScore();
+
+                return 1;
+            }
+            else if(player1.GetPlayerScore() < player2.GetPlayerScore())
+            {
+                System.out.println(player2.GetPlayerName() + " won! Player's stats");
+
+                logText += player2.GetPlayerName() + " won! Player's stats\n";
+                logText += player1.ShowScore();
+                logText += player2.ShowScore();
+
+                return 2;
+            }
+            else
+            {
+                System.out.println("Draw! Player's stats");
+
+                logText += "Draw! Player's stats\n";
+                logText += player1.ShowScore();
+                logText += player2.ShowScore();
+
+                return 3;
+            }
+        }
+    }
+
+    public static void InitializeLogFile()
+    {
+        try
+        {
+            logFile = new File("RockPaperScissor " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH.mm.ss")) + ".log");
+            logFile.createNewFile();
+        }
+        catch (Exception e)
+        {
+            System.out.println("Shit happened.");
+            e.printStackTrace();
+        }
+    }
+
+    public static void WriteToLogFile()
+    {
+        try
+        {
+            FileWriter fw = new FileWriter(logFile.getName(), true);
+            fw.write(logText);
+            fw.close();
+        }
+        catch(Exception e)
+        {
+            System.out.println("Shit happened.");
+            e.printStackTrace();
+        }
+        finally
+        {
+            logText = "";
+        }
+    }
+
+    public static void InitializeGame(int[] startingDeck)
+    {
+        isHumanGame = true;
+        InitializeHumanAiGame(startingDeck);
+    }
+
+    public static void InitializeGame()
+    {
+        isHumanGame = false;
+        InitializeAiAiGame();
+    }
+
+    public static void InitializeHumanAiGame(int[] startingDeck)
+    {
+        long startID;
+        do
+        {
+            startID = rng.nextLong();
+        } while(startID < 0);
+
+        player1 = new HumanPlayer(startID, "Sen", startingDeck);
+
+        do
+        {
+            startID = rng.nextLong();
+        } while(startID < 0);
+
+        player2 = new ComputerPlayer(startID, "Bilgisayar");
+    }
+
+    public static void InitializeAiAiGame()
+    {
+        long startID;
+        do
+        {
+            startID = rng.nextLong();
+        } while(startID < 0);
+
+        player1 = new ComputerPlayer(startID, "Bilgisayar 1");
+
+        do
+        {
+            startID = rng.nextLong();
+        } while(startID < 0);
+
+        player2 = new ComputerPlayer(startID, "Bilgisayar 2");
+    }
+
+    public static void PlayARound(int humanSelection)
+    {
+        System.out.println("======================== START OF ROUND =========================");
+        logText += "======================== START OF ROUND =========================\n";
+
+        System.out.println(player1.GetPlayerName() + " has " + player1.GetItemDeck().size() + " item(s) in his deck.");
+        logText += player1.GetPlayerName() + " has " + player1.GetItemDeck().size() + " item(s) in his deck.\n";
+
+        System.out.println("---------------------------------------------------------------------");
+        logText += "---------------------------------------------------------------------\n";
+        for(Player.DeckItem i : player1.deck)
+        {
+            System.out.println("|\t" + i.id + "\t|\t" + i.object.GetType() + "\t|\tDurability: " + i.object.GetDurability() + "\t|\tLevel Point: " + i.object.GetLevelPoint() + "\t|");
+            logText += "|\t" + i.id + "\t|\t" + i.object.GetType() + "\t|\tDurability: " + i.object.GetDurability() + "\t|\tLevel Point: " + i.object.GetLevelPoint() + "\t|\n";
+        }
+        System.out.println("---------------------------------------------------------------------\n");
+        logText += "---------------------------------------------------------------------\n\n";
+
+        System.out.println(player2.GetPlayerName() + " has " + player2.GetItemDeck().size() + " item(s) in his deck.\n");
+        logText += player2.GetPlayerName() + " has " + player2.GetItemDeck().size() + " item(s) in his deck.\n\n";
+
+        System.out.println("---------------------------------------------------------------------");
+        logText += "---------------------------------------------------------------------\n";
+        for(Player.DeckItem i : player2.deck)
+        {
+            System.out.println("|\t" + i.id + "\t|\t" + i.object.GetType() + "\t|\tDurability: " + i.object.GetDurability() + "\t|\tLevel Point: " + i.object.GetLevelPoint() + "\t|");
+            logText += "|\t" + i.id + "\t|\t" + i.object.GetType() + "\t|\tDurability: " + i.object.GetDurability() + "\t|\tLevel Point: " + i.object.GetLevelPoint() + "\t|\n";
+        }
+        System.out.println("---------------------------------------------------------------------\n");
+        logText += "---------------------------------------------------------------------\n\n";
+
+        if(isHumanGame && DEBUG)
+        {
+            System.out.print("Kullanici girisi: ");
+            selectionOfHuman = input.nextInt();
+        }
+
+        //deckItem1 = null;
+        //deckItem2 = null;
+
+        deckItem1 = player1.SelectItem(humanSelection);
+        deckItem2 = player2.SelectItem(humanSelection);
+
+        if(DEBUG)
+        {
+            System.out.println("deckItem1: " + deckItem1);
+            System.out.println("deckItem2: " + deckItem2);
+        }
+
+        System.out.println(player1.GetPlayerName() + " chose " + deckItem1.object.GetType().toString());
+        System.out.println(player2.GetPlayerName() + " chose " + deckItem2.object.GetType().toString());
+        logText += player1.GetPlayerName() + " chose " + deckItem1.object.GetType().toString() + "\n";
+        logText += player2.GetPlayerName() + " chose " + deckItem2.object.GetType().toString() + "\n";
+
+        System.out.println("\n" + player1.GetPlayerName() + "'s item's stats at start of this round");
+        logText += "\n" + player1.GetPlayerName() + "'s item's stats at start of this round\n";
+        logText += deckItem1.ShowStats();
+
+        System.out.println("\n" + player2.GetPlayerName() + "'s item's stats at start of this round");
+        logText += "\n" + player2.GetPlayerName() + "'s item's stats at start of this round\n";
+        logText += deckItem2.ShowStats();
+
+        double attackValueForItem1, attackValueForItem2;
+
+        switch (deckItem2.object.GetType())
+        {
+            default -> attackValueForItem1 = 0.0;
+            case Rock -> attackValueForItem1 = deckItem1.object.CalculateAttackValue((Rock) deckItem2.object);
+            case Paper -> attackValueForItem1 = deckItem1.object.CalculateAttackValue((Paper) deckItem2.object);
+            case Scissor -> attackValueForItem1 = deckItem1.object.CalculateAttackValue((Scissor) deckItem2.object);
+            case HeavyRock -> attackValueForItem1 = deckItem1.object.CalculateAttackValue((HeavyRock) deckItem2.object);
+            case SpecialPaper -> attackValueForItem1 = deckItem1.object.CalculateAttackValue((SpecialPaper) deckItem2.object);
+            case MasterScissor -> attackValueForItem1 = deckItem1.object.CalculateAttackValue((MasterScissor) deckItem2.object);
+        }
+
+        switch (deckItem1.object.GetType())
+        {
+            default -> attackValueForItem2 = 0.0;
+            case Rock -> attackValueForItem2 = deckItem2.object.CalculateAttackValue((Rock) deckItem1.object);
+            case Paper -> attackValueForItem2 = deckItem2.object.CalculateAttackValue((Paper) deckItem1.object);
+            case Scissor -> attackValueForItem2 = deckItem2.object.CalculateAttackValue((Scissor) deckItem1.object);
+            case HeavyRock -> attackValueForItem2 = deckItem2.object.CalculateAttackValue((HeavyRock) deckItem1.object);
+            case SpecialPaper -> attackValueForItem2 = deckItem2.object.CalculateAttackValue((SpecialPaper) deckItem1.object);
+            case MasterScissor -> attackValueForItem2 = deckItem2.object.CalculateAttackValue((MasterScissor) deckItem1.object);
+        }
+
+        System.out.println("\nCalculated attack value for " + player1.GetPlayerName() + "'s item: " + attackValueForItem1);
+        System.out.println("Calculated attack value for " + player2.GetPlayerName() + "'s item: " + attackValueForItem2);
+        logText += "\nCalculated attack value for " + player1.GetPlayerName() + "'s item: " + attackValueForItem1 + "\n";
+        logText += "Calculated attack value for " + player2.GetPlayerName() + "'s item: " + attackValueForItem2 + "\n";
+
+        int statusOfItem1 = deckItem1.object.UpdateStats(-attackValueForItem2, 0);
+        int statusOfItem2 = deckItem2.object.UpdateStats(-attackValueForItem1, 0);
+
+        deckItem1.isUsed = true;
+        deckItem2.isUsed = true;
+
+        System.out.println("\n" + player1.GetPlayerName() + "'s item's stats after applying damage");
+        logText += "\n" + player1.GetPlayerName() + "'s item's stats after applying damage\n";
+        logText += deckItem1.ShowStats();
+
+        System.out.println("\n" + player2.GetPlayerName() + "'s item's stats after applying damage");
+        logText += "\n" + player2.GetPlayerName() + "'s item's stats after applying damage\n";
+        logText += deckItem2.ShowStats();
+
+        if(statusOfItem1 == -1)
+        {
+            player1.RemoveItem(deckItem1);
+            System.out.println(player1.GetPlayerName() + "'s item, " + deckItem1.object.GetType() + ", eliminated from the game!");
+            logText += player1.GetPlayerName() + "'s item, " + deckItem1.object.GetType() + ", eliminated from the game!\n";
+
+            if(deckItem2.object.UpdateStats(0, 20) == 1 && statusOfItem2 != -1)
+            {
+                player2.UpgradeItem(deckItem2);
+                System.out.println(player2.GetPlayerName() + "'s item, " + deckItem2.object.GetType() + ", is upgraded!");
+                logText += player2.GetPlayerName() + "'s item, " + deckItem2.object.GetType() + ", is upgraded!\n";
+            }
+        }
+
+        if(statusOfItem2 == -1)
+        {
+            player2.RemoveItem(deckItem2);
+            System.out.println(player2.GetPlayerName() + "'s item, " + deckItem2.object.GetType() + ", eliminated from the game!");
+            logText += player2.GetPlayerName() + "'s item, " + deckItem2.object.GetType() + ", eliminated from the game!\n";
+
+            if(deckItem1.object.UpdateStats(0, 20) == 1 && statusOfItem1 != -1)
+            {
+                player1.UpgradeItem(deckItem1);
+                System.out.println(player1.GetPlayerName() + "'s item, " + deckItem1.object.GetType() + ", is upgraded!");
+                logText += player1.GetPlayerName() + "'s item, " + deckItem1.object.GetType() + ", is upgraded!\n";
+            }
+        }
+
+        //player1.UpdateItem(deckItem1);
+        //player2.UpdateItem(deckItem2);
+
+        System.out.println("\n" + player1.GetPlayerName() + "'s item's stats at end of this round");
+        logText += "\n" + player1.GetPlayerName() + "'s item's stats at end of this round\n";
+        logText += deckItem1.ShowStats();
+
+        System.out.println("\n" + player2.GetPlayerName() + "'s item's stats at end of this round");
+        logText += "\n" + player2.GetPlayerName() + "'s item's stats at end of this round\n";
+        logText += deckItem2.ShowStats();
+
+        System.out.println("========================= END OF ROUND ==========================\n\n");
+        logText += "========================= END OF ROUND ==========================\n\n\n";
+
+        currentRound += 1;
+    }
+}

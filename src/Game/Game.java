@@ -20,6 +20,7 @@ public class Game
     public static int maxRound = 10;
     public static boolean isHumanGame = false;
     public static int gameStatus = 0;
+    public static int currentRound = 1;
     static Random rng = new Random();
     static String logText = "";
     static File logFile = null;
@@ -35,16 +36,19 @@ public class Game
     {
         int port = 8080;
 
-        //WebServer server = new WebServer();
-        //server.Start(port);
-
+        WebServer server = new WebServer();
+        server.Start(port);
+        //DEBUG=true;
         if(DEBUG)
         {
+            /*
             int[] someDeck = { 0, 1, 2, 0, 1 };
 
-            InitializeGame(someDeck);
+            InitializeGame();
             InitializeLogFile();
-            HandleGameplay();
+            HandleGameplay(100);
+            */
+
         }
     }
 
@@ -63,7 +67,7 @@ public class Game
         return jsonstring;
     }
 
-    public static void HandleGameplay()
+    public static void HandleGameplay(int maxRound)
     {
         int i;
         for(i = 0; i < maxRound; i++)
@@ -96,7 +100,7 @@ public class Game
             System.out.println(player1.GetPlayerName() + " used all of his items!\n\n");
             logText += player1.GetPlayerName() + " used all of his items!\n\n\n";
         }
-
+        resetIsUsedFlag = true;
         for(Player.DeckItem item : player2.GetItemDeck())
             resetIsUsedFlag &= item.isUsed;
 
@@ -276,7 +280,7 @@ public class Game
         logText += "---------------------------------------------------------------------\n";
         for(Player.DeckItem i : player1.deck)
         {
-            System.out.println("|\t" + i.id + "\t|\t" + i.object.GetType() + "\t|\tDurability: " + i.object.GetDurability() + "\t|\tLevel Point: " + i.object.GetLevelPoint() + "\t|");
+            System.out.println("|\t" + i.id + "\t|\t" + i.object.GetType() + "\t|\tDurability: " + i.object.GetDurability() + "\t|\tLevel Point: " + i.object.GetLevelPoint() + "\t|\tisUsed: " + (i.isUsed)+"\t|");
             logText += "|\t" + i.id + "\t|\t" + i.object.GetType() + "\t|\tDurability: " + i.object.GetDurability() + "\t|\tLevel Point: " + i.object.GetLevelPoint() + "\t|\n";
         }
         System.out.println("---------------------------------------------------------------------\n");
@@ -289,7 +293,7 @@ public class Game
         logText += "---------------------------------------------------------------------\n";
         for(Player.DeckItem i : player2.deck)
         {
-            System.out.println("|\t" + i.id + "\t|\t" + i.object.GetType() + "\t|\tDurability: " + i.object.GetDurability() + "\t|\tLevel Point: " + i.object.GetLevelPoint() + "\t|");
+            System.out.println("|\t" + i.id + "\t|\t" + i.object.GetType() + "\t|\tDurability: " + i.object.GetDurability() + "\t|\tLevel Point: " + i.object.GetLevelPoint() + "\t|\tisUsed: " + (i.isUsed)+"\t|");
             logText += "|\t" + i.id + "\t|\t" + i.object.GetType() + "\t|\tDurability: " + i.object.GetDurability() + "\t|\tLevel Point: " + i.object.GetLevelPoint() + "\t|\n";
         }
         System.out.println("---------------------------------------------------------------------\n");
@@ -410,5 +414,7 @@ public class Game
 
         System.out.println("========================= END OF ROUND ==========================\n\n");
         logText += "========================= END OF ROUND ==========================\n\n\n";
+
+        currentRound += 1;
     }
 }

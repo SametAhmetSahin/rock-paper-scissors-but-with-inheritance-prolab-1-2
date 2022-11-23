@@ -14,7 +14,11 @@ public class WebServer
 
         server.createContext("/", new RootHandler());
         server.createContext("/get", new GetHandler());
-        server.createContext("/post", new PostHandler());
+        server.createContext("/initializegame", new InitializeGame());
+        server.createContext("/playaround", new PlayARoundHandler());
+        server.createContext("/getgamestatus", new GetGameStatusHandler());
+        server.createContext("/checkgamestatus", new GameStatusHandler());
+        server.createContext("/getscores", new GetScoresHandler());
         /*
         server.createContext("/echoHeader", new EchoHeaderHandler());
         server.createContext("/echoPost", new EchoPostHandler());

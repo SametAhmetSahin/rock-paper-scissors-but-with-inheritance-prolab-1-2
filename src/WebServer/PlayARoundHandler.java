@@ -2,21 +2,18 @@ package WebServer;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
+import Game.Game;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
-import static WebServer.RootHandler.parseQuery;
-
-public class PostHandler implements HttpHandler
+public class PlayARoundHandler implements HttpHandler
 {
     @Override
     public void handle(HttpExchange he) throws IOException
@@ -40,11 +37,10 @@ public class PostHandler implements HttpHandler
         };
         // send response
         String response;
-        response = jo.toString();
-        response = "";
-        for (Object key : jo.keySet()) {
-            response += key + ":" + jo.get(key) + ",";
-        }
+        response = "empty";
+
+        response += (Game.currentRound);
+
         response += "\n";
         System.out.println("response:" + response);
         he.sendResponseHeaders(200, response.length());
@@ -52,5 +48,17 @@ public class PostHandler implements HttpHandler
         OutputStream os = he.getResponseBody();
         os.write(response.getBytes());
         os.close();
+
+        System.out.println("selection: " + jo.get("selection") + " to string " + jo.get("selection").toString() );
+
+        Game.PlayARound(Integer.parseInt(jo.get("selection").toString()));
+        System.out.println();
+        Game.CheckAndResetIsUsedFlags();
+        int gameStatus = Game.CheckGameStatus(Game.currentRound);
+
+
+        Game.WriteToLogFile();
+
+
     }
 }
