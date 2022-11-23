@@ -24,7 +24,7 @@ public class ComputerPlayer extends Player
         super.InitializeDeck();
     }
 
-    public ComputerPlayer(long ID, String name, long startScore)
+    public ComputerPlayer(long ID, String name, double startScore)
     {
         super.SetPlayerID(ID);
         super.SetPlayerName(name);
